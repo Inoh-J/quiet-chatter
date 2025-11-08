@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: quiet-chatter
+  data:
+    mongodb:
+      uuid-representation: standard
