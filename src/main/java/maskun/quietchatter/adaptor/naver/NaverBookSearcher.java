@@ -9,7 +9,7 @@ import maskun.quietchatter.hexagon.application.value.Keyword;
 import maskun.quietchatter.hexagon.domain.Book;
 import maskun.quietchatter.hexagon.domain.value.Isbn;
 import maskun.quietchatter.hexagon.domain.value.Title;
-import maskun.quietchatter.hexagon.outbound.BookKeywordSearcher;
+import maskun.quietchatter.hexagon.outbound.ExternalBookSearcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +18,11 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilder;
 
 @Component
-class NaverBookSearcher implements BookKeywordSearcher {
-    private final RestClient restClient;
+class NaverBookSearcher implements ExternalBookSearcher {
+    private final RestClient naverClient;
 
-    NaverBookSearcher(NaverApiEnvironment naverApiEnvironment) {
-        this.restClient = RestClient.builder()
+    NaverBookSearcher(RestClient.Builder applicationClientBuilder, NaverApiEnvironment naverApiEnvironment) {
+        this.naverClient = applicationClientBuilder
                 .baseUrl("https://openapi.naver.com/v1/search/book.json")
                 .defaultHeader("X-Naver-Client-Id", naverApiEnvironment.getClientId())
                 .defaultHeader("X-Naver-Client-Secret", naverApiEnvironment.getClientSecret())
@@ -32,10 +32,7 @@ class NaverBookSearcher implements BookKeywordSearcher {
     @Override
     public Page<Book> findByKeyword(Keyword keyword, PageRequest pageRequest) {
         NaverBookSearchResponse response = fetch(keyword, pageRequest);
-
-        List<Book> books = response.items().stream()
-                .map(NaverBookSearcher::map).toList();
-
+        List<Book> books = map(response);
         return new PageImpl<>(books, pageRequest, response.total());
     }
 
@@ -44,7 +41,7 @@ class NaverBookSearcher implements BookKeywordSearcher {
         int pageSize = pageRequest.getPageSize();
         int start = (pageNumber * pageSize) + 1; // naver 는 1부터시작
 
-        return restClient.get()
+        return naverClient.get()
                 .uri(buildSearchUri(keyword, start, pageSize))
                 .retrieve()
                 .body(NaverBookSearchResponse.class);
@@ -56,6 +53,13 @@ class NaverBookSearcher implements BookKeywordSearcher {
                 .queryParam("start", start)
                 .queryParam("display", display)
                 .build();
+    }
+
+    private static List<Book> map(NaverBookSearchResponse response) {
+        List<NaverBookItem> items = response.items();
+        return items.stream()
+                .map(NaverBookSearcher::map)
+                .toList();
     }
 
     private static Book map(NaverBookItem item) {

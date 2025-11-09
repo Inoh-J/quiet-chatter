@@ -31,6 +31,24 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
+tasks.named('test', Test) {
     useJUnitPlatform()
+    useJUnitPlatform {
+        excludeTags("external-api")
+    }
+}
+
+tasks.register("testExternalApi", Test) {
+    group = "verification"
+    description = "외부 API 테스트"
+
+    useJUnitPlatform {
+        includeTags("external-api")
+    }
+
+    def naverApiClientIdName = 'naver.api.client-id'
+    def naverApiClientSecretName = 'naver.api.client-secret'
+
+    systemProperty naverApiClientIdName, project.property(naverApiClientIdName)
+    systemProperty naverApiClientSecretName, project.property(naverApiClientSecretName)
 }

@@ -1,6 +1,10 @@
 spring:
   application:
     name: quiet-chatter
+  datasource:
+    url: hidden
+    username: hidden
+    password: hidden
   jpa:
     hibernate:
       ddl-auto: update

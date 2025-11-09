@@ -5,6 +5,6 @@ import maskun.quietchatter.hexagon.domain.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
-public interface BookKeywordSearcher {
+public interface ExternalBookSearcher {
     Page<Book> findByKeyword(Keyword keyword, PageRequest pageRequest);
 }

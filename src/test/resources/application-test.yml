@@ -1,4 +1,7 @@
 spring:
+  datasource:
+    url: jdbc:tc:postgresql:16-alpine:///test
+
   jpa:
     show-sql: true
     hibernate:
