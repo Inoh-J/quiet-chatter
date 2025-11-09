@@ -12,7 +12,7 @@ import maskun.quietchatter.hexagon.domain.value.Title;
 import maskun.quietchatter.hexagon.outbound.ExternalBookSearcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilder;
@@ -30,13 +30,13 @@ class NaverBookSearcher implements ExternalBookSearcher {
     }
 
     @Override
-    public Page<Book> findByKeyword(Keyword keyword, PageRequest pageRequest) {
+    public Page<Book> findByKeyword(Keyword keyword, Pageable pageRequest) {
         NaverBookSearchResponse response = fetch(keyword, pageRequest);
         List<Book> books = map(response);
         return new PageImpl<>(books, pageRequest, response.total());
     }
 
-    private NaverBookSearchResponse fetch(Keyword keyword, PageRequest pageRequest) {
+    private NaverBookSearchResponse fetch(Keyword keyword, Pageable pageRequest) {
         int pageNumber = pageRequest.getPageNumber();
         int pageSize = pageRequest.getPageSize();
         int start = (pageNumber * pageSize) + 1; // naver 는 1부터시작

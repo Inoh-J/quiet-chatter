@@ -28,4 +28,12 @@ public class Book extends BaseEntity {
     public Isbn getIsbn() {
         return isbn;
     }
+
+    public void update(Title title) {
+        this.title = title;
+    }
+
+    public void update(Isbn isbn) {
+        this.isbn = isbn;
+    }
 }

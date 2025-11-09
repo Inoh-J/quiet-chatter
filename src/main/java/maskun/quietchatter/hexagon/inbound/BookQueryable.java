@@ -3,9 +3,9 @@ package maskun.quietchatter.hexagon.inbound;
 import maskun.quietchatter.hexagon.application.value.Keyword;
 import maskun.quietchatter.hexagon.domain.Book;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 public interface BookQueryable {
 
-    Page<Book> findBy(Keyword keyword, PageRequest pageRequest);
+    Page<Book> findBy(Keyword keyword, Pageable pageRequest);
 }

@@ -1,8 +1,11 @@
 package maskun.quietchatter.hexagon.outbound;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import maskun.quietchatter.hexagon.domain.Book;
+import maskun.quietchatter.hexagon.domain.value.Isbn;
 import org.springframework.data.repository.Repository;
 
 public interface BookRepository extends Repository<Book, UUID> {
@@ -10,7 +13,5 @@ public interface BookRepository extends Repository<Book, UUID> {
 
     Book save(Book book);
 
-    void delete(Book book);
-
-    void deleteById(UUID id);
+    List<Book> findByIsbnIn(Collection<Isbn> isbns);
 }
