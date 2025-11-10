@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.book;
+package maskun.quietchatter.adaptor.web.book;
 
 import maskun.quietchatter.hexagon.application.BookQueryService;
 import maskun.quietchatter.hexagon.application.value.Keyword;

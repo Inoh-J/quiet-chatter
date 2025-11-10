@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.naver.dto;
+package maskun.quietchatter.adaptor.web.naver.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;

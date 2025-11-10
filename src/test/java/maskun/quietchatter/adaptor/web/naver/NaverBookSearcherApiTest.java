@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.naver;
+package maskun.quietchatter.adaptor.web.naver;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

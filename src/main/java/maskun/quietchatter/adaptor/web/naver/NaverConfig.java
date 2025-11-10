@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.naver;
+package maskun.quietchatter.adaptor.web.naver;
 
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Configuration;

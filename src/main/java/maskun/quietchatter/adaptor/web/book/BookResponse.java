@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.book;
+package maskun.quietchatter.adaptor.web.book;
 
 import java.io.Serializable;
 import java.util.UUID;

@@ -1,10 +1,10 @@
-package maskun.quietchatter.adaptor.naver;
+package maskun.quietchatter.adaptor.web.naver;
 
 import java.net.URI;
 import java.util.List;
 import java.util.function.Function;
-import maskun.quietchatter.adaptor.naver.dto.NaverBookItem;
-import maskun.quietchatter.adaptor.naver.dto.NaverBookSearchResponse;
+import maskun.quietchatter.adaptor.web.naver.dto.NaverBookItem;
+import maskun.quietchatter.adaptor.web.naver.dto.NaverBookSearchResponse;
 import maskun.quietchatter.hexagon.application.value.Keyword;
 import maskun.quietchatter.hexagon.domain.book.Book;
 import maskun.quietchatter.hexagon.domain.book.Isbn;
