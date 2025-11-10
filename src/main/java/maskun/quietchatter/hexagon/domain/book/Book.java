@@ -4,7 +4,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import maskun.quietchatter.hexagon.domain.BaseEntity;
 
-@Entity(name = "Book")
+@Entity(name = "book")
 public class Book extends BaseEntity {
 
     @Embedded
@@ -34,5 +34,14 @@ public class Book extends BaseEntity {
 
     public void update(Isbn isbn) {
         this.isbn = isbn;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + getId() + ", " +
+                "isbn = " + getIsbn() + ", " +
+                "title = " + getTitle() + ", " +
+                "createdAt = " + getCreatedAt() + ")";
     }
 }

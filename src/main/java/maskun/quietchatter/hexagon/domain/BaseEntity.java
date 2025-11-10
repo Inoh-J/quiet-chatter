@@ -65,5 +65,12 @@ public abstract class BaseEntity implements Serializable {
                 .getPersistentClass()
                 .hashCode() : getClass().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "createdAt = " + createdAt + ")";
+    }
 }
 
