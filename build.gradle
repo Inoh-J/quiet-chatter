@@ -29,6 +29,7 @@ dependencies {
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
     testImplementation 'net.datafaker:datafaker:2.5.3'
+    testImplementation 'org.instancio:instancio-junit:5.5.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 

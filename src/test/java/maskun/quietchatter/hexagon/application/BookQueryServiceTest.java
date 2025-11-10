@@ -1,9 +1,12 @@
 package maskun.quietchatter.hexagon.application;
 
+import static maskun.quietchatter.hexagon.domain.book.BookFixture.book;
+import static maskun.quietchatter.hexagon.domain.book.BookFixture.newBook;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Instancio.ofObject;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anySet;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -11,9 +14,10 @@ import static org.mockito.Mockito.when;
 import java.util.List;
 import maskun.quietchatter.hexagon.application.value.Keyword;
 import maskun.quietchatter.hexagon.domain.book.Book;
-import maskun.quietchatter.hexagon.domain.book.BookFixture;
 import maskun.quietchatter.hexagon.outbound.BookRepository;
 import maskun.quietchatter.hexagon.outbound.ExternalBookSearcher;
+import org.instancio.Instancio;
+import org.instancio.Select;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,13 +55,16 @@ class BookQueryServiceTest {
     @Test
     void findBy() {
         //given
-        Book expectedExisted = BookFixture.builder().random().id(null).build();
-        Book notExist1 = BookFixture.builder().random().id(null).build();
-        Book notExist2 = BookFixture.builder().random().id(null).build();
+
+        Book expectedExisted = newBook().create();
+        Book notExist1 = newBook().create();
+        Book notExist2 = newBook().create();
         List<Book> fetchedBooks = List.of(expectedExisted, notExist1, notExist2);
 
-        Book existed = BookFixture.builder().random()
-                .isbn(expectedExisted.getIsbn()).build();
+        Book existed = Instancio.of(book().toModel())
+                .set(Select.field(Book::getIsbn), expectedExisted.getIsbn())
+                .create();
+
 
         PageRequest pageRequest = PageRequest.of(0, 10, Sort.unsorted());
 
@@ -70,7 +77,8 @@ class BookQueryServiceTest {
         when(bookRepository.save(any(Book.class)))
                 .thenAnswer(invocation -> {
                     Book book = invocation.getArgument(0);
-                    return BookFixture.builder(book).randomId().build();
+                    ofObject(book).fill();
+                    return book;
                 });
 
         //when

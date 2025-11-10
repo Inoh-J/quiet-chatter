@@ -1,18 +1,20 @@
-package maskun.quietchatter.adaptor.book;
+package maskun.quietchatter.adaptor.web.book;
 
+import static maskun.quietchatter.hexagon.domain.book.BookFixture.newBook;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.IntStream;
+import maskun.quietchatter.adaptor.web.WebConfig;
 import maskun.quietchatter.hexagon.application.BookQueryService;
 import maskun.quietchatter.hexagon.domain.book.Book;
-import maskun.quietchatter.hexagon.domain.book.BookFixture;
+import net.datafaker.Faker;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -20,6 +22,7 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
 @WebMvcTest(BookApi.class)
+@Import(WebConfig.class)
 class BookApiTest {
     @Autowired
     MockMvcTester tester;
@@ -28,8 +31,11 @@ class BookApiTest {
 
     @Test
     void search() {
-        Supplier<Book> bookSupplier = () -> BookFixture.builder().random().build();
-        List<Book> books = IntStream.range(0, 10).mapToObj(i -> bookSupplier.get()).toList();
+
+        Faker faker = new Faker();
+        List<Book> books = Instancio.ofList(newBook().toModel())
+                .size(10)
+                .create();
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
