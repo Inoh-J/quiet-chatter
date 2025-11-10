@@ -8,26 +8,23 @@
 
     Person(user, "사용자")
 
-
-    System_Boundary(ststem,"클라우드 서버 (AWS Light Sail)") {
-        SystemDb(db,"데이터 베이스","MongoDB (container)")
+    Boundary(ststem, "클라우드 서버", "AWS Light Sail") {
+        SystemDb(db, "데이터 베이스", "PostgreSQL (container)")
         System(app,"어플리케이션 서버", "Spring boot (container)")
     }
 
-    Boundary(git, "GitHub"){
+    Boundary(git, "VCS", "GitHub") {
 
         Component(gitAction, "CI/CD","Git Hub Action")
-        ComponentDb(repository, "저장소","Git Hub Repository")
+        ComponentDb(repository, "프로젝트 저장소", "Git Hub Repository")
         Person(developer, "개발자")
     }
 
-
-
-    BiRel(user, app, "접속/응답")
+    BiRel(user, app, "")
     Rel(developer, repository, "Push to")
-    Rel(gitAction, app, "Docker 이미지 배포")
+    Rel(gitAction, app, "Docker 이미지 배포 / 실행")
     Rel(repository, gitAction, "Run Git Hub Action")
-    BiRel(app, db, "통신")
+    BiRel(app, db, "")
 
 ```
 ## 애플리케이션 아키텍쳐 (Hexagonal Architecture)
@@ -40,7 +37,7 @@ config:
 ---
 classDiagram
     direction LR
-    namespace haxagon {
+    namespace hexagon {
         class domain {
         }
         class `application service`{
