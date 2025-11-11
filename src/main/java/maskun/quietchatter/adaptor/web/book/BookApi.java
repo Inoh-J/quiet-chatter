@@ -2,10 +2,10 @@ package maskun.quietchatter.adaptor.web.book;
 
 import maskun.quietchatter.hexagon.application.BookQueryService;
 import maskun.quietchatter.hexagon.application.value.Keyword;
-import maskun.quietchatter.hexagon.domain.book.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,10 +21,11 @@ class BookApi {
     }
 
     @GetMapping
-    public Page<BookResponse> search(@PageableDefault Pageable pageable,
-                                     @RequestParam(name = "keyword") String keywordValue) {
+    public ResponseEntity<Page<BookResponse>> search(@PageableDefault Pageable pageable,
+                                                     @RequestParam(name = "keyword") String keywordValue) {
         Keyword keyword = new Keyword(keywordValue);
-        Page<Book> books = bookQueryService.findBy(keyword, pageable);
-        return books.map(BookResponse::from);
+        Page<BookResponse> page = bookQueryService.findBy(keyword, pageable)
+                .map(BookResponse::from);
+        return ResponseEntity.ok(page);
     }
 }

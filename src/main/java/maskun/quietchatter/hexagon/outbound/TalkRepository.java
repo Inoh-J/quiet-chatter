@@ -1,9 +1,10 @@
 package maskun.quietchatter.hexagon.outbound;
 
-import java.util.List;
 import java.util.UUID;
 import maskun.quietchatter.hexagon.domain.book.Book;
 import maskun.quietchatter.hexagon.domain.talk.Talk;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 
 public interface TalkRepository extends Repository<Talk, UUID> {
@@ -11,7 +12,7 @@ public interface TalkRepository extends Repository<Talk, UUID> {
 
     Talk save(Talk talk);
 
-    void deleteById(UUID id);
+    void saveAll(Iterable<Talk> talks);
 
-    List<Talk> findByBookOrderByCreatedAt(Book book);
+    Page<Talk> findByBookOrderByCreatedAt(Book book, Pageable pageRequest);
 }

@@ -1,16 +1,22 @@
 package maskun.quietchatter.hexagon.domain.book;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import maskun.quietchatter.hexagon.domain.BaseEntity;
 
 @Entity(name = "book")
+@Table(indexes = @Index(columnList = "isbn", name = "idx_book_isbn"))
 public class Book extends BaseEntity {
 
     @Embedded
     private Title title;
 
     @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "isbn"))
     private Isbn isbn;
 
     public static Book newOf(Title title, Isbn isbn) {
