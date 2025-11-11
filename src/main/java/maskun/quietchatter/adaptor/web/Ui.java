@@ -9,7 +9,6 @@ public class Ui {
 
     @GetMapping("/")
     public String redirectToHome() {
-        // "/home" URL로 브라우저를 리디렉션시킵니다.
         return "redirect:/home";
     }
 

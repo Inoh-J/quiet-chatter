@@ -65,7 +65,7 @@
             return;
         }
 
-        fetch(`/api/v1/books?keyword=${keyword}&page=${currentPage}&sort=title,asc`)
+        fetch(`/api/books?keyword=${keyword}&page=${currentPage}&sort=title,asc`)
             .then(response => response.json())
             .then(data => {
                 if (data.page) { // Check if the new structure is present

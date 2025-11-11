@@ -42,7 +42,7 @@ class BookApiTest {
         when(bookQueryService.findBy(any(), any()))
                 .thenReturn(new PageImpl<>(books, pageRequest, books.size()));
 
-        MvcTestResult result = tester.get().uri("/api/v1/books?keyword={}&size={}&page={}", "test", 10, 0)
+        MvcTestResult result = tester.get().uri("/api/books?keyword={}&size={}&page={}", "test", 10, 0)
                 .exchange();
 
         assertThat(result).hasStatusOk()
