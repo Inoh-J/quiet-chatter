@@ -41,17 +41,3 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/quiet-chatter:latest
           # Dockerfile 경로가 프로젝트 루트에 있다고 가정
-
-      # --- Lightsail 서버에 배포 (SSH) ---
-      - name: Deploy to Lightsail Server via SSH
-        uses: appleboy/ssh-action@v1.0.3 # SSH 연결 및 명령어 실행 액션
-        with:
-          host: ${{ secrets.LIGHTSAIL_HOST }}
-          username: ${{ secrets.LIGHTSAIL_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            echo "이미지 풀"
-            docker compose pull app
-            
-            echo "재시작"
-            docker compose up -d --force-recreate app
