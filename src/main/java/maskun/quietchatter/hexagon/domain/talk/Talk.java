@@ -12,7 +12,7 @@ import maskun.quietchatter.hexagon.domain.BaseEntity;
 import maskun.quietchatter.hexagon.domain.book.Book;
 
 @Entity(name = "talk")
-@Table(indexes = @Index(columnList = "book_id"))
+@Table(indexes = @Index(columnList = "book_id", name = "idx_talk_book_id"))
 public class Talk extends BaseEntity {
 
     @ManyToOne
