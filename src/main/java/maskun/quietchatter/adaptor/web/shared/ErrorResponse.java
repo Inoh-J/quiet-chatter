@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.web;
+package maskun.quietchatter.adaptor.web.shared;
 
 public record ErrorResponse(
         String message

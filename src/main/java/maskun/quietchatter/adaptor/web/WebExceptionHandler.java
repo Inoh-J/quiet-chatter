@@ -7,6 +7,7 @@ import static org.springframework.http.ResponseEntity.status;
 
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
+import maskun.quietchatter.adaptor.web.shared.ErrorResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -27,7 +28,7 @@ public class WebExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return status(NOT_FOUND).body(errorResponse);
     }
-    
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUncaught(Exception ex) {
         log.error("catch되지 않은 예외", ex);
