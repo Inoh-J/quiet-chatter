@@ -68,7 +68,10 @@ public class BookQueryService implements BookQueryable {
     private static Function<Book, Book> updateAndGet(Book fecthedBook) {
         return exist -> {
             exist.update(fecthedBook.getTitle());
-            exist.update(fecthedBook.getIsbn());
+            exist.update(fecthedBook.getAuthor());
+            exist.update(fecthedBook.getThumbnailImage());
+            exist.update(fecthedBook.getDescription());
+            exist.update(fecthedBook.getExternalLink());
             return exist;
         };
     }

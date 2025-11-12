@@ -6,8 +6,12 @@ import java.util.function.Function;
 import maskun.quietchatter.adaptor.web.naver.dto.NaverBookItem;
 import maskun.quietchatter.adaptor.web.naver.dto.NaverBookSearchResponse;
 import maskun.quietchatter.hexagon.application.value.Keyword;
+import maskun.quietchatter.hexagon.domain.book.Author;
 import maskun.quietchatter.hexagon.domain.book.Book;
+import maskun.quietchatter.hexagon.domain.book.Description;
+import maskun.quietchatter.hexagon.domain.book.ExternalLink;
 import maskun.quietchatter.hexagon.domain.book.Isbn;
+import maskun.quietchatter.hexagon.domain.book.ThumbnailImage;
 import maskun.quietchatter.hexagon.domain.book.Title;
 import maskun.quietchatter.hexagon.outbound.ExternalBookSearcher;
 import org.springframework.data.domain.Page;
@@ -65,6 +69,12 @@ class NaverBookSearcher implements ExternalBookSearcher {
     private static Book map(NaverBookItem item) {
         Title title = new Title(item.title());
         Isbn isbn = new Isbn(item.isbn());
-        return Book.newOf(title, isbn);
+        Book book = Book.newOf(title, isbn);
+
+        book.update(new Author(item.author()));
+        book.update(new ThumbnailImage(item.image()));
+        book.update(new Description(item.description()));
+        book.update(new ExternalLink(item.link()));
+        return book;
     }
 }

@@ -3,7 +3,7 @@ package maskun.quietchatter.hexagon.domain.book;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public record Title(
+public record Description(
         String value
 ) {
 }

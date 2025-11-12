@@ -10,13 +10,21 @@ import maskun.quietchatter.hexagon.domain.book.Book;
 public record BookResponse(
         UUID id,
         String title,
-        String isbn) implements Serializable {
+        String isbn,
+        String author,
+        String thumbnailImageUrl,
+        String description,
+        String externalLinkUrl) implements Serializable {
 
     public static BookResponse from(Book book) {
         return new BookResponse(
                 book.getId(),
                 book.getTitle().value(),
-                book.getIsbn().value()
+                book.getIsbn().value(),
+                book.getAuthor().name(),
+                book.getThumbnailImage().url(),
+                book.getDescription().value(),
+                book.getExternalLink().url()
         );
     }
 }
