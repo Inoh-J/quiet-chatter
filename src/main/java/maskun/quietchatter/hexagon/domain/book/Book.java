@@ -11,7 +11,8 @@ import maskun.quietchatter.hexagon.domain.BaseEntity;
 
 @Getter
 @Entity(name = "book")
-@Table(indexes = @Index(columnList = "isbn", name = "idx_book_isbn"))
+@Table(indexes = {@Index(columnList = "isbn", name = "idx_book_isbn")
+        , @Index(columnList = "title", name = "idx_book_title")})
 public class Book extends BaseEntity {
 
     @Embedded
@@ -64,8 +65,6 @@ public class Book extends BaseEntity {
     public void update(ExternalLink externalLink) {
         this.externalLink = externalLink;
     }
-
-
 
     @Override
     public String toString() {
