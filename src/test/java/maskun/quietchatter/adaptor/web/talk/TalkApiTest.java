@@ -1,28 +1,24 @@
 package maskun.quietchatter.adaptor.web.talk;
 
-import static maskun.quietchatter.hexagon.domain.Fixture.book;
-import static maskun.quietchatter.hexagon.domain.Fixture.talk;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import maskun.quietchatter.adaptor.web.WebConfig;
 import maskun.quietchatter.hexagon.application.value.TalkQueryRequest;
-import maskun.quietchatter.hexagon.domain.book.Book;
-import maskun.quietchatter.hexagon.domain.talk.Content;
 import maskun.quietchatter.hexagon.domain.talk.Talk;
 import maskun.quietchatter.hexagon.inbound.TalkCreatable;
 import maskun.quietchatter.hexagon.inbound.TalkQueryable;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
-import org.instancio.Model;
-import org.instancio.Select;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,22 +54,17 @@ class TalkApiTest {
     private ObjectMapper objectMapper;
 
     @Test
-    @DisplayName("success post")
+    @DisplayName("북톡 등록 성공")
     void post() throws JsonProcessingException {
-        Book book = book().asPersisted().create();
+        Talk talk = Instancio.create(Talk.class);
 
-        UUID bookId = book.getId();
-        String text = new Faker().text().text(100);
-        Content content = new Content(text);
+        when(talkCreatable.create(any())).thenReturn(talk);
 
-        Talk talk = talk().asPersisted(book)
-                .set(Select.field(Talk::getContent), content)
-                .create();
-
-        when(talkCreatable.create(any()))
-                .thenReturn(talk);
-
-        TalkPostRequest request = new TalkPostRequest(bookId, text, Instant.now());
+        TalkPostRequest request = new TalkPostRequest(
+                UUID.randomUUID(),
+                new Faker().text().text(100),
+                Instant.now().plus(Duration.ofDays(60))
+        );
 
         //when
         MvcTestResult result = tester.post().uri("/api/talks")
@@ -88,17 +79,14 @@ class TalkApiTest {
     }
 
     @Test
-    @DisplayName("page success")
+    @DisplayName("페이징 조회")
     void findPage() {
-        Book book = book().asPersisted().create();
+        UUID bookId = UUID.randomUUID();
 
-        Model<Talk> talkModel = talk().asPersisted(book)
-                .set(Select.field(Talk::getContent), new Content(new Faker().text().text(100)))
-                .toModel();
+        List<Talk> talks = Instancio.ofList(Talk.class).size(10).set(field(Talk::getBookId), bookId).create();
 
-        List<Talk> talks = Instancio.ofList(talkModel).size(10).create();
+        TalkQueryRequest request = new TalkQueryRequest(bookId, PageRequest.of(0, 10));
 
-        TalkQueryRequest request = new TalkQueryRequest(book.getId(), PageRequest.of(0, 10));
         when(talkQueryable.findBy(eq(request)))
                 .thenReturn(new PageImpl<>(talks, request.pageRequest(), talks.size()));
 
@@ -106,7 +94,7 @@ class TalkApiTest {
         String uri = UriComponentsBuilder.fromPath("/api/talks")
                 .queryParam("size", 10)
                 .queryParam("page", 0)
-                .queryParam("bookId", book.getId().toString())
+                .queryParam("bookId", bookId)
                 .toUriString();
         MvcTestResult result = tester.get().uri(uri)
                 .contentType(MediaType.APPLICATION_JSON)

@@ -18,7 +18,7 @@ public record TalkResponse(
         return new TalkResponse(
                 talk.getId(),
                 talk.getCreatedAt(),
-                talk.getBook().getId(),
+                talk.getBookId(),
                 talk.getContent().value()
         );
     }

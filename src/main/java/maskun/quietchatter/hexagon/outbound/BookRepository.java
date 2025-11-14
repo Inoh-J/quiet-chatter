@@ -10,10 +10,10 @@ import maskun.quietchatter.hexagon.domain.book.Isbn;
 import org.springframework.data.repository.Repository;
 
 public interface BookRepository extends Repository<Book, UUID> {
-    String ERROR_MISSING = "책을 찾을 수 없음 : %s";
 
     default Book require(UUID id) throws NoSuchElementException {
-        return findById(id).orElseThrow(() -> new NoSuchElementException(ERROR_MISSING.formatted(id)));
+        return findById(id).orElseThrow(() ->
+                new NoSuchElementException("찾을 수 없음 [%s] id=%s".formatted(Book.class.getSimpleName(), id)));
     }
 
     Optional<Book> findById(UUID id);

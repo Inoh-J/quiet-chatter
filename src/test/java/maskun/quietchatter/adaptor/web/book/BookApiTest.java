@@ -1,6 +1,5 @@
 package maskun.quietchatter.adaptor.web.book;
 
-import static maskun.quietchatter.hexagon.domain.Fixture.book;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -11,6 +10,7 @@ import maskun.quietchatter.hexagon.application.BookQueryService;
 import maskun.quietchatter.hexagon.domain.book.Book;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -32,12 +32,11 @@ class BookApiTest {
     private BookQueryService bookQueryService;
 
     @Test
+    @DisplayName("첵조회 페이지 테스트")
     void search() {
 
         Faker faker = new Faker();
-        List<Book> books = Instancio.ofList(book().asNew().toModel())
-                .size(10)
-                .create();
+        List<Book> books = Instancio.ofList(Book.class).size(10).create();
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 

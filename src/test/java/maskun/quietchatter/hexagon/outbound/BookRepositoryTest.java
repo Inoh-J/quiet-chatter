@@ -3,11 +3,13 @@ package maskun.quietchatter.hexagon.outbound;
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.instancio.Select.fields;
 
 import java.util.NoSuchElementException;
 import maskun.quietchatter.adaptor.jpa.JpaConfig;
-import maskun.quietchatter.hexagon.domain.Fixture;
+import maskun.quietchatter.hexagon.domain.BaseEntity;
 import maskun.quietchatter.hexagon.domain.book.Book;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ class BookRepositoryTest {
     @Test
     void save() {
 
-        Book book = Fixture.book().asNew().create();
+        Book book = Instancio.of(Book.class).ignore(fields().declaredIn(BaseEntity.class)).create();
         Book saved = repository.save(book);
 
         assertThat(saved).isNotNull();

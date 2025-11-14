@@ -1,6 +1,8 @@
 package maskun.quietchatter.hexagon.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 import maskun.quietchatter.hexagon.application.value.TalkQueryRequest;
@@ -27,6 +29,8 @@ class TalkQueryServiceTest {
     @Test
     @DisplayName("없는 책을 조회시 빈 페이지 반환")
     void findByNotExistingBook() {
+        when(talkRepository.findByBookIdOrderByCreatedAt(any(), any())).thenReturn(Page.empty());
+
         TalkQueryRequest request = new TalkQueryRequest(UUID.randomUUID(), PageRequest.of(0, 10));
         Page<Talk> page = talkQueryService.findBy(request);
 

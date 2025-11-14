@@ -1,7 +1,6 @@
 package maskun.quietchatter.hexagon.outbound;
 
 import java.util.UUID;
-import maskun.quietchatter.hexagon.domain.book.Book;
 import maskun.quietchatter.hexagon.domain.talk.Talk;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,5 +13,5 @@ public interface TalkRepository extends Repository<Talk, UUID> {
 
     void saveAll(Iterable<Talk> talks);
 
-    Page<Talk> findByBookOrderByCreatedAt(Book book, Pageable pageRequest);
+    Page<Talk> findByBookIdOrderByCreatedAt(UUID bookId, Pageable pageRequest);
 }

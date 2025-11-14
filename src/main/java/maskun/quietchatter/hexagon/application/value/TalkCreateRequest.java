@@ -6,7 +6,7 @@ import maskun.quietchatter.hexagon.domain.talk.Time;
 
 public record TalkCreateRequest(
         UUID bookId,
-        UUID authorId,
+        UUID memberId,
         Content content,
         Time time
 ) {

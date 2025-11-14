@@ -1,8 +1,10 @@
 package maskun.quietchatter.hexagon.application;
 
-import static maskun.quietchatter.hexagon.domain.Fixture.book;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Instancio.of;
 import static org.instancio.Instancio.ofObject;
+import static org.instancio.Select.field;
+import static org.instancio.Select.fields;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anySet;
@@ -12,11 +14,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 import maskun.quietchatter.hexagon.application.value.Keyword;
+import maskun.quietchatter.hexagon.domain.BaseEntity;
 import maskun.quietchatter.hexagon.domain.book.Book;
 import maskun.quietchatter.hexagon.outbound.BookRepository;
 import maskun.quietchatter.hexagon.outbound.ExternalBookSearcher;
 import org.instancio.Instancio;
-import org.instancio.Select;
+import org.instancio.Model;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,14 +57,15 @@ class BookQueryServiceTest {
     @Test
     void findBy() {
         //given
-
-        Book expectedExisted = book().asNew().create();
-        Book notExist1 = book().asNew().create();
-        Book notExist2 = book().asNew().create();
+        Model<Book> bookModel = of(Book.class).ignore(fields().declaredIn(BaseEntity.class)).toModel();
+        Book expectedExisted = Instancio.of(bookModel).create();
+        Book notExist1 = Instancio.of(bookModel).create();
+        Book notExist2 = Instancio.of(bookModel).create();
         List<Book> fetchedBooks = List.of(expectedExisted, notExist1, notExist2);
 
-        Book existed = Instancio.of(book().asPersisted().toModel())
-                .set(Select.field(Book::getIsbn), expectedExisted.getIsbn())
+        Book existed = Instancio.of(Book.class)
+                .set(field(Book::getIsbn), expectedExisted.getIsbn())
+                .set(field(Book::getTitle), expectedExisted.getTitle())
                 .create();
 
 
