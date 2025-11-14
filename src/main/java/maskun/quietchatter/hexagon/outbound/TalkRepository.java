@@ -13,5 +13,5 @@ public interface TalkRepository extends Repository<Talk, UUID> {
 
     void saveAll(Iterable<Talk> talks);
 
-    Page<Talk> findByBookIdOrderByCreatedAt(UUID bookId, Pageable pageRequest);
+    Page<Talk> findByBookIdOrderByCreatedAtDesc(UUID bookId, Pageable pageRequest);
 }

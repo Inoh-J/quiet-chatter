@@ -17,6 +17,6 @@ class TalkQueryService implements TalkQueryable {
 
     @Override
     public Page<Talk> findBy(TalkQueryRequest request) {
-        return talkRepository.findByBookIdOrderByCreatedAt(request.bookId(), request.pageRequest());
+        return talkRepository.findByBookIdOrderByCreatedAtDesc(request.bookId(), request.pageRequest());
     }
 }

@@ -49,7 +49,7 @@ class TalkRepositoryTest {
         List<Talk> talks = Instancio.ofList(talkModel).size(100).create();
         repository.saveAll(talks);
 
-        Page<Talk> result = repository.findByBookIdOrderByCreatedAt(bookId, PageRequest.of(0, 10));
+        Page<Talk> result = repository.findByBookIdOrderByCreatedAtDesc(bookId, PageRequest.of(0, 10));
 
         assertThat(result.getSize()).isEqualTo(10);
         assertThat(result.getTotalElements()).isEqualTo(100);

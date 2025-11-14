@@ -29,7 +29,7 @@ class TalkQueryServiceTest {
     @Test
     @DisplayName("없는 책을 조회시 빈 페이지 반환")
     void findByNotExistingBook() {
-        when(talkRepository.findByBookIdOrderByCreatedAt(any(), any())).thenReturn(Page.empty());
+        when(talkRepository.findByBookIdOrderByCreatedAtDesc(any(), any())).thenReturn(Page.empty());
 
         TalkQueryRequest request = new TalkQueryRequest(UUID.randomUUID(), PageRequest.of(0, 10));
         Page<Talk> page = talkQueryService.findBy(request);

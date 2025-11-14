@@ -13,3 +13,6 @@ naver:
   api:
     client-id: hidden
     client-secret: hidden
+logging:
+  level:
+    web: debug

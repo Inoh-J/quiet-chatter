@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -28,6 +29,12 @@ public class BookQueryService implements BookQueryable {
     public BookQueryService(ExternalBookSearcher externalBookSearcher, BookRepository bookRepository) {
         this.externalBookSearcher = externalBookSearcher;
         this.bookRepository = bookRepository;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Book findBy(UUID bookId) {
+        return bookRepository.require(bookId);
     }
 
     @Override
