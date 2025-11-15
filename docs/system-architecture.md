@@ -5,24 +5,27 @@
 ```mermaid
     C4Context
     title Quiet Chatter : 인프라스트럭처 아키텍쳐
-
     Person(user, "사용자")
 
     Boundary(ststem, "클라우드 서버", "AWS Light Sail") {
-        SystemDb(db, "데이터 베이스", "PostgreSQL (container)")
-        System(app,"어플리케이션 서버", "Spring boot (container)")
+        Container(ws, "웹서버", "Nginx")
+        Container(db, "데이터 베이스", "PostgreSQL")
+        Container(app, "어플리케이션 서버", "Spring boot")
+        Container(wt, "배포 자동화 툴", "Watchtower")
     }
 
     Boundary(git, "VCS", "GitHub") {
-
-        Component(gitAction, "CI/CD","Git Hub Action")
+        Component(gitAction, "CI/CD", "Git Hub Action")
         ComponentDb(repository, "프로젝트 저장소", "Git Hub Repository")
         Person(developer, "개발자")
     }
-
-    BiRel(user, app, "")
+    System(dockerhub, "이미지 저장소", "Docker Hub")
+    BiRel(user, ws, "")
+    BiRel(ws, app, "")
+    Rel(dockerhub, wt, "이미지 Pull")
+    Rel(wt, app, "배포")
     Rel(developer, repository, "Push to")
-    Rel(gitAction, app, "Docker 이미지 배포 / 실행")
+    Rel(gitAction, dockerhub, "Docker 이미지 푸시")
     Rel(repository, gitAction, "Run Git Hub Action")
     BiRel(app, db, "")
 
