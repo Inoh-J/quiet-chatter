@@ -26,6 +26,25 @@
         .recent-talks-section .list-group-item:last-child {
             margin-bottom: 0;
         }
+
+        /* Media query for mobile responsiveness */
+        @media (max-width: 576px) {
+            .container { /* Target the main container */
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+
+            .recent-talks-section {
+                padding-left: 0;
+                padding-right: 0;
+            }
+
+            .recent-talks-section .list-group-item {
+                max-width: 100%; /* Full width on small screens */
+                margin-left: 0;
+                margin-right: 0;
+            }
+        }
     </style>
 </head>
 <body>
