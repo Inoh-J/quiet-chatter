@@ -68,22 +68,21 @@
 
 접속경로 : https://quiet-chatter.com
 
-![quiet-chatter-icon.png](docs/img/quiet-chatter-icon.png)
-
+![quiet-chatter-icon2.png](src/main/resources/static/images/quiet-chatter-icon2.png)
 ### 비전
 
 수줍은 사람을 연결하는 독서모임을 만든다
 
 ### 주요 기능
 
-- 특정이 불가능한 익명
-- 250자 짧은 독후감 작성 : 북톡 (Book Talk)
+- 개인정보 수집 없는 익명
+- 250자 짧은 추천사/감상평 : 북톡 (Book Talk)
 - 일정 시간이 지나면 글 비공개 : 자동 숨김(Self-hidden)
 - 조용한 리액션 : 👍좋아요, ❤️공감해요 (댓글 및 멘션 불가)
 
-### 앱 소개
+### 이렇게 사용해보세요 :)
 
-// 아썸한 GIF로 대체
+<img alt="사용시연.gif" height="700" src="src/main/resources/static/images/%EC%82%AC%EC%9A%A9%EC%8B%9C%EC%97%B0.gif" width="700"/>
 
 ### 개발관련 소개
 

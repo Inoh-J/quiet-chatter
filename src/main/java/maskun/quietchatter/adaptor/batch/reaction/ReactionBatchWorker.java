@@ -17,34 +17,6 @@ import org.springframework.stereotype.Component;
 public class ReactionBatchWorker {
     private final JdbcTemplate jdbcTemplate;
 
-    private static Function<Entry<UUID, Map<Type, Long>>, Object[]> extractReactionCounts() {
-        return e -> {
-            UUID id = e.getKey();
-            Map<Type, Long> decrementsMap = e.getValue();
-
-            Long likeCount = decrementsMap.getOrDefault(Type.LIKE, 0L);
-            Long supportCount = decrementsMap.getOrDefault(Type.SUPPORT, 0L);
-
-            return new Object[]{likeCount, supportCount, id};
-        };
-    }
-
-    private static Map<UUID, Map<Type, Long>> getCountMap(List<ReactionTarget> affectedTargets) {
-        return affectedTargets.stream()
-                .collect(Collectors.groupingBy(ReactionTarget::talkId,
-                        Collectors.groupingBy(ReactionTarget::type, Collectors.counting())));
-    }
-
-    private static List<Object[]> getObjects(List<ReactionTarget> requests) {
-        return requests.stream()
-                .map(convertToObjectArray())
-                .toList();
-    }
-
-    private static Function<ReactionTarget, Object[]> convertToObjectArray() {
-        return request -> new Object[]{request.talkId(), request.memberId(), request.type().name()};
-    }
-
     public void process(ReactionRequestAggregator aggregator) {
         deleteBatch(aggregator.getDeletes());
         insertBatch(aggregator.getInserts());
@@ -65,21 +37,6 @@ public class ReactionBatchWorker {
 
     }
 
-    private int[] deleteReactions(List<ReactionTarget> requests) {
-        String sql = "DELETE FROM reaction WHERE talk_id = ? and member_id = ? and type = ?";
-        List<Object[]> batchArgs = getObjects(requests);
-        return jdbcTemplate.batchUpdate(sql, batchArgs);
-    }
-
-    private void countDown(List<ReactionTarget> affectedTargets) {
-        Map<UUID, Map<Type, Long>> decrements = getCountMap(affectedTargets);
-
-        String sql = "UPDATE talk SET like_count = like_count - ?, support_count = support_count - ? WHERE id = ?";
-        List<Object[]> batchArgs = decrements.entrySet().stream()
-                .map(extractReactionCounts()).toList();
-        jdbcTemplate.batchUpdate(sql, batchArgs);
-    }
-
     public void insertBatch(List<ReactionTarget> requests) {
         if (requests.isEmpty()) {
             return;
@@ -97,6 +54,21 @@ public class ReactionBatchWorker {
         countUp(affectedTargets);
     }
 
+    private int[] deleteReactions(List<ReactionTarget> requests) {
+        String sql = "DELETE FROM reaction WHERE talk_id = ? and member_id = ? and type = ?";
+        List<Object[]> batchArgs = getObjects(requests);
+        return jdbcTemplate.batchUpdate(sql, batchArgs);
+    }
+
+    private void countDown(List<ReactionTarget> affectedTargets) {
+        Map<UUID, Map<Type, Long>> decrements = getCountMap(affectedTargets);
+
+        String sql = "UPDATE talk SET like_count = like_count - ?, support_count = support_count - ? WHERE id = ?";
+        List<Object[]> batchArgs = decrements.entrySet().stream()
+                .map(extractReactionCounts()).toList();
+        jdbcTemplate.batchUpdate(sql, batchArgs);
+    }
+
     private void countUp(List<ReactionTarget> affectedTargets) {
         Map<UUID, Map<Type, Long>> counts = getCountMap(affectedTargets);
 
@@ -104,5 +76,33 @@ public class ReactionBatchWorker {
         List<Object[]> batchArgs = counts.entrySet().stream()
                 .map(extractReactionCounts()).toList();
         jdbcTemplate.batchUpdate(sql, batchArgs);
+    }
+
+    private static List<Object[]> getObjects(List<ReactionTarget> requests) {
+        return requests.stream()
+                .map(convertToObjectArray())
+                .toList();
+    }
+
+    private static Function<Entry<UUID, Map<Type, Long>>, Object[]> extractReactionCounts() {
+        return e -> {
+            UUID id = e.getKey();
+            Map<Type, Long> decrementsMap = e.getValue();
+
+            Long likeCount = decrementsMap.getOrDefault(Type.LIKE, 0L);
+            Long supportCount = decrementsMap.getOrDefault(Type.SUPPORT, 0L);
+
+            return new Object[]{likeCount, supportCount, id};
+        };
+    }
+
+    private static Function<ReactionTarget, Object[]> convertToObjectArray() {
+        return request -> new Object[]{request.talkId(), request.memberId(), request.type().name()};
+    }
+
+    private static Map<UUID, Map<Type, Long>> getCountMap(List<ReactionTarget> affectedTargets) {
+        return affectedTargets.stream()
+                .collect(Collectors.groupingBy(ReactionTarget::talkId,
+                        Collectors.groupingBy(ReactionTarget::type, Collectors.counting())));
     }
 }
