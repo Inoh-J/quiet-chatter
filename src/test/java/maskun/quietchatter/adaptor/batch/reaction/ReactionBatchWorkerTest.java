@@ -3,9 +3,10 @@ package maskun.quietchatter.adaptor.batch.reaction;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import maskun.quietchatter.adaptor.jpa.JpaConfig;
-import org.instancio.Instancio;
-import org.jetbrains.annotations.Nullable;
+import maskun.quietchatter.hexagon.domain.reaction.Reaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 @Import({JpaConfig.class, ReactionBatchWorker.class})
 @ActiveProfiles("test")
 class ReactionBatchWorkerTest {
+    private final int size = 10;
+
     @Autowired
     private ReactionBatchWorker worker;
 
@@ -27,34 +30,83 @@ class ReactionBatchWorkerTest {
 
     @BeforeEach
     void setUp() {
-        Long count = getCount();
-        assertThat(count).isEqualTo(0L);
-
-    }
-
-    private @Nullable Long getCount() {
-        return jdbcTemplate.queryForObject("SELECT count(reaction.id) FROM reaction", Long.class);
+        jdbcTemplate.update("DELETE FROM reaction");
+        jdbcTemplate.update("DELETE FROM talk");
+        assertThat(getReactionCount()).isEqualTo(0L);
     }
 
     @Test
-    @DisplayName("정상적으로 배치작업이 이뤄지는지 테스트")
-    void insertBatch() {
-        List<ReactionTarget> targets = Instancio.ofList(ReactionTarget.class).size(10).create();
+    @DisplayName("INSERT와 DELETE를 혼합하여 처리하고, 중복 이벤트가 무시되는지 테스트")
+    void process_with_mixed_and_duplicated_events() {
+        UUID talkId1 = UUID.randomUUID();
+        UUID talkId2 = UUID.randomUUID();
+        UUID talkId3 = UUID.randomUUID();
 
-        worker.insertBatch(targets);
-        worker.insertBatch(targets); //duplicated insert 아무것도안함
-        assertThat(getCount()).isEqualTo(10L);
-        assertThat(getInvalidCount()).isEqualTo(0L);
+        UUID memberId1 = UUID.randomUUID();
+        UUID memberId2 = UUID.randomUUID();
+        UUID memberId3 = UUID.randomUUID();
 
-        worker.deleteBatch(targets);
-        assertThat(getCount()).isEqualTo(0L);
+        jdbcTemplate.update(
+                "INSERT INTO talk (id, member_id, content, like_count, support_count) VALUES (?, ?, ?, 0, 0)",
+                talkId1, UUID.randomUUID(), "Talk 1");
+        jdbcTemplate.update(
+                "INSERT INTO talk (id, member_id, content, like_count, support_count) VALUES (?, ?, ?, 0, 0)",
+                talkId2, UUID.randomUUID(), "Talk 2");
+        jdbcTemplate.update(
+                "INSERT INTO talk (id, member_id, content, like_count, support_count) VALUES (?, ?, ?, 0, 0)",
+                talkId3, UUID.randomUUID(), "Talk 3");
+
+        // 2. insert와 delete를 혼합해서. 일부 겹치게 해서 넣어줘
+        List<ReactionEvent> events = List.of(
+                // Talk 1 시나리오: like_count=2, support_count=1 이 되어야 함.
+                new ReactionEvent(talkId1, memberId1, Reaction.Type.LIKE, Action.INSERT),
+                new ReactionEvent(talkId1, memberId2, Reaction.Type.LIKE, Action.INSERT),
+                new ReactionEvent(talkId1, memberId3, Reaction.Type.SUPPORT, Action.INSERT),
+                new ReactionEvent(talkId1, memberId3, Reaction.Type.SUPPORT, Action.INSERT), // 4. 겹치는 INSERT 이벤트
+
+                // Talk 2 시나리오: support_count=2 가 되어야 함.
+                new ReactionEvent(talkId2, memberId1, Reaction.Type.SUPPORT, Action.INSERT),
+                new ReactionEvent(talkId2, memberId2, Reaction.Type.SUPPORT, Action.INSERT),
+
+                // Talk 3 시나리오: INSERT/DELETE가 서로 상쇄되어 count=0 이 되어야 함.
+                new ReactionEvent(talkId3, memberId1, Reaction.Type.LIKE, Action.INSERT),
+                new ReactionEvent(talkId3, memberId1, Reaction.Type.LIKE, Action.DELETE),
+
+                // Talk 3 시나리오: 중복 DELETE 테스트
+                new ReactionEvent(talkId3, memberId2, Reaction.Type.LIKE, Action.INSERT), // reaction 레코드 생성
+                new ReactionEvent(talkId3, memberId2, Reaction.Type.LIKE, Action.DELETE), // reaction 레코드 삭제
+                new ReactionEvent(talkId3, memberId2, Reaction.Type.LIKE, Action.DELETE)  // 4. 겹치는 DELETE 이벤트
+        );
+
+        // when
+        ReactionRequestAggregator aggregator = new ReactionRequestAggregator(events);
+        worker.process(aggregator);
+
+        // then
+        // 최종 reaction 레코드 개수 검증
+        // talk_id=1 (3개), talk_id=2 (2개), talk_id=3 (0개) -> 총 5개
+        assertThat(getReactionCount()).isEqualTo(5);
+
+        // 3. talk 별 like/support 카운트 검증
+        Map<String, Object> talk1Counts = getTalkReactionCounts(talkId1);
+        assertThat(talk1Counts.get("like_count")).isEqualTo(2L);
+        assertThat(talk1Counts.get("support_count")).isEqualTo(1L);
+
+        Map<String, Object> talk2Counts = getTalkReactionCounts(talkId2);
+        assertThat(talk2Counts.get("like_count")).isEqualTo(0L);
+        assertThat(talk2Counts.get("support_count")).isEqualTo(2L);
+
+        Map<String, Object> talk3Counts = getTalkReactionCounts(talkId3);
+        assertThat(talk3Counts.get("like_count")).isEqualTo(0L);
+        assertThat(talk3Counts.get("support_count")).isEqualTo(0L);
     }
 
-    private @Nullable Long getInvalidCount() {
-        return jdbcTemplate.queryForObject(
-                "SELECT count(reaction.id) FROM reaction "
-                        + "WHERE created_at IS NULL or member_id IS NULL or talk_id IS NULL",
-                Long.class);
+    private Long getReactionCount() {
+        return jdbcTemplate.queryForObject("SELECT count(id) FROM reaction", Long.class);
+    }
+
+    private Map<String, Object> getTalkReactionCounts(UUID talkId) {
+        return jdbcTemplate.queryForMap("SELECT like_count, support_count FROM talk WHERE id = ?", talkId);
     }
 }
 

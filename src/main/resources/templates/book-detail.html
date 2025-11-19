@@ -411,10 +411,10 @@
 
     function handleReactionClick(element, talkId, reactionType, hasReacted) {
         const method = hasReacted ? 'DELETE' : 'POST';
-        fetch(`/api/talks/${talkId}/reactions`, {
+        fetch(`/api/reactions`, {
             method: method,
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({type: reactionType})
+            body: JSON.stringify({type: reactionType, talkId: talkId})
         })
             .then(response => {
                 if (!response.ok) {

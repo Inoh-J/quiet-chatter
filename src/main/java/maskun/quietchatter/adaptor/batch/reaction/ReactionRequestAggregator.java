@@ -7,24 +7,25 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import maskun.quietchatter.hexagon.application.value.ReactionTarget;
 
 public class ReactionRequestAggregator {
 
-    private final Map<ReactionTarget, ReactionRequest> requests = new HashMap<>();
+    private final Map<ReactionTarget, ReactionEvent> requests = new HashMap<>();
 
-    public ReactionRequestAggregator(Collection<ReactionRequest> requests) {
+    public ReactionRequestAggregator(Collection<ReactionEvent> requests) {
         requests.forEach(this::put);
     }
 
-    private void put(ReactionRequest request) {
+    private void put(ReactionEvent request) {
         ReactionTarget target = new ReactionTarget(request.talkId(), request.memberId(), request.type());
 
-        if (requests.containsKey(target)) {
-            requests.remove(target);
-            return;
-        }
+        ReactionEvent computed = requests.computeIfAbsent(target, k -> request);
 
-        requests.put(target, request);
+        if (computed.action() != request.action()) {
+            //상쇄
+            requests.remove(target);
+        }
     }
 
     public List<ReactionTarget> getInserts() {

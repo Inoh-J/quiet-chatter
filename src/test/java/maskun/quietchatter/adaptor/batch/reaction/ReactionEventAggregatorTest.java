@@ -10,26 +10,32 @@ import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class ReactionRequestAggregatorTest {
+class ReactionEventAggregatorTest {
 
     @Test
     @DisplayName("집계처리가 잘되는지 테스트")
     void aggregationTest() {
-        List<ReactionRequest> requests = new ArrayList<>();
+        List<ReactionEvent> requests = new ArrayList<>();
 
-        List<ReactionRequest> inserts = Instancio.ofList(ReactionRequest.class).size(100)
-                .set(field(ReactionRequest::action), Action.INSERT)
+        List<ReactionEvent> inserts = Instancio.ofList(ReactionEvent.class).size(100)
+                .set(field(ReactionEvent::action), Action.INSERT)
                 .create();
         requests.addAll(inserts);
 
-        List<ReactionRequest> conflicts = inserts.subList(0, 10).stream()
-                .map(request -> new ReactionRequest(request.talkId(), request.memberId(), request.type(),
+        List<ReactionEvent> conflicts = inserts.subList(0, 10).stream()
+                .map(request -> new ReactionEvent(request.talkId(), request.memberId(), request.type(),
                         Action.DELETE))
                 .toList();
         requests.addAll(conflicts);
 
-        List<ReactionRequest> deletes = Instancio.ofList(ReactionRequest.class).size(100)
-                .set(field(ReactionRequest::action), Action.DELETE)
+        List<ReactionEvent> duplicates = inserts.subList(11, 20).stream()
+                .map(request -> new ReactionEvent(request.talkId(), request.memberId(), request.type(),
+                        request.action()))
+                .toList();
+        requests.addAll(duplicates);
+
+        List<ReactionEvent> deletes = Instancio.ofList(ReactionEvent.class).size(100)
+                .set(field(ReactionEvent::action), Action.DELETE)
                 .create();
         requests.addAll(deletes);
 

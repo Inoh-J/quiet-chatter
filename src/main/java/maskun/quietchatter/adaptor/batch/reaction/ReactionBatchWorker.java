@@ -1,13 +1,16 @@
 package maskun.quietchatter.adaptor.batch.reaction;
 
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import maskun.quietchatter.hexagon.application.value.ReactionTarget;
 import maskun.quietchatter.hexagon.domain.reaction.Reaction.Type;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -18,64 +21,48 @@ public class ReactionBatchWorker {
     private final JdbcTemplate jdbcTemplate;
 
     public void process(ReactionRequestAggregator aggregator) {
-        deleteBatch(aggregator.getDeletes());
-        insertBatch(aggregator.getInserts());
+        AffectedCountMap map = new AffectedCountMap();
+
+        List<ReactionTarget> deleted = delete(aggregator.getDeletes());
+        map.countDown(deleted);
+
+        List<ReactionTarget> inserted = insert(aggregator.getInserts());
+        map.countUp(inserted);
+
+        updateCount(map.result);
     }
 
-    public void deleteBatch(List<ReactionTarget> targets) {
+    private List<ReactionTarget> delete(List<ReactionTarget> targets) {
         if (targets.isEmpty()) {
-            return;
+            return targets;
         }
 
-        int[] deletedRowCounts = deleteReactions(targets);
-
-        List<ReactionTarget> affectedTargets = IntStream.range(0, deletedRowCounts.length)
-                .filter(i -> deletedRowCounts[i] == 1)
-                .mapToObj(targets::get).toList();
-
-        countDown(affectedTargets);
-
+        int[] rowCount = deleteBatch(targets);
+        return filterSuccess(targets, rowCount);
     }
 
-    public void insertBatch(List<ReactionTarget> requests) {
+    private List<ReactionTarget> insert(List<ReactionTarget> requests) {
         if (requests.isEmpty()) {
-            return;
+            return requests;
         }
 
-        String sql = "INSERT INTO reaction (talk_id, member_id, type, created_at) VALUES (?, ?, ?, now())"
-                + " ON CONFLICT (talk_id, member_id, type) DO NOTHING";
-        List<Object[]> batchArgs = getObjects(requests);
-        int[] affectedRows = jdbcTemplate.batchUpdate(sql, batchArgs);
-
-        List<ReactionTarget> affectedTargets = IntStream.range(0, affectedRows.length)
-                .filter(i -> affectedRows[i] == 1)
-                .mapToObj(requests::get).toList();
-
-        countUp(affectedTargets);
+        int[] affectedRows = insertBatch(requests);
+        return filterSuccess(requests, affectedRows);
     }
 
-    private int[] deleteReactions(List<ReactionTarget> requests) {
+    private int[] deleteBatch(List<ReactionTarget> requests) {
         String sql = "DELETE FROM reaction WHERE talk_id = ? and member_id = ? and type = ?";
+
         List<Object[]> batchArgs = getObjects(requests);
         return jdbcTemplate.batchUpdate(sql, batchArgs);
     }
 
-    private void countDown(List<ReactionTarget> affectedTargets) {
-        Map<UUID, Map<Type, Long>> decrements = getCountMap(affectedTargets);
+    private int[] insertBatch(List<ReactionTarget> requests) {
+        String sql = "INSERT INTO reaction (talk_id, member_id, type, created_at) VALUES (?, ?, ?, now())"
+                + " ON CONFLICT (talk_id, member_id, type) DO NOTHING";
 
-        String sql = "UPDATE talk SET like_count = like_count - ?, support_count = support_count - ? WHERE id = ?";
-        List<Object[]> batchArgs = decrements.entrySet().stream()
-                .map(extractReactionCounts()).toList();
-        jdbcTemplate.batchUpdate(sql, batchArgs);
-    }
-
-    private void countUp(List<ReactionTarget> affectedTargets) {
-        Map<UUID, Map<Type, Long>> counts = getCountMap(affectedTargets);
-
-        String sql = "UPDATE talk SET like_count = like_count + ?, support_count = support_count + ? WHERE id = ?";
-        List<Object[]> batchArgs = counts.entrySet().stream()
-                .map(extractReactionCounts()).toList();
-        jdbcTemplate.batchUpdate(sql, batchArgs);
+        List<Object[]> batchArgs = getObjects(requests);
+        return jdbcTemplate.batchUpdate(sql, batchArgs);
     }
 
     private static List<Object[]> getObjects(List<ReactionTarget> requests) {
@@ -84,25 +71,57 @@ public class ReactionBatchWorker {
                 .toList();
     }
 
-    private static Function<Entry<UUID, Map<Type, Long>>, Object[]> extractReactionCounts() {
+    private static Function<ReactionTarget, Object[]> convertToObjectArray() {
+        return request -> new Object[]{request.talkId(), request.memberId(), request.type().name()};
+    }
+
+    private static List<ReactionTarget> filterSuccess(List<ReactionTarget> requests, int[] affectedRows) {
+        return IntStream.range(0, affectedRows.length)
+                .filter(i -> affectedRows[i] == 1)
+                .mapToObj(requests::get)
+                .toList();
+    }
+
+    private void updateCount(Map<UUID, Map<Type, Long>> result) {
+        String sql = "UPDATE talk SET like_count = like_count + ?, support_count = support_count + ? WHERE id = ?";
+        List<Object[]> batchArgs = result.entrySet().stream()
+                .map(extractCounts()).toList();
+        jdbcTemplate.batchUpdate(sql, batchArgs);
+    }
+
+    private static Function<Entry<UUID, Map<Type, Long>>, Object[]> extractCounts() {
         return e -> {
             UUID id = e.getKey();
-            Map<Type, Long> decrementsMap = e.getValue();
+            Map<Type, Long> diffMap = e.getValue();
 
-            Long likeCount = decrementsMap.getOrDefault(Type.LIKE, 0L);
-            Long supportCount = decrementsMap.getOrDefault(Type.SUPPORT, 0L);
+            Long likeCount = diffMap.getOrDefault(Type.LIKE, 0L);
+            Long supportCount = diffMap.getOrDefault(Type.SUPPORT, 0L);
 
             return new Object[]{likeCount, supportCount, id};
         };
     }
 
-    private static Function<ReactionTarget, Object[]> convertToObjectArray() {
-        return request -> new Object[]{request.talkId(), request.memberId(), request.type().name()};
-    }
+    @Getter
+    private static class AffectedCountMap {
 
-    private static Map<UUID, Map<Type, Long>> getCountMap(List<ReactionTarget> affectedTargets) {
-        return affectedTargets.stream()
-                .collect(Collectors.groupingBy(ReactionTarget::talkId,
-                        Collectors.groupingBy(ReactionTarget::type, Collectors.counting())));
+        private final Map<UUID, Map<Type, Long>> result = new HashMap<>();
+
+        public void countUp(List<ReactionTarget> targets) {
+            targets.forEach(target -> countUp(target.talkId(), target.type()));
+        }
+
+        public void countDown(List<ReactionTarget> targets) {
+            targets.forEach(target -> countDown(target.talkId(), target.type()));
+        }
+
+        private void countUp(UUID talkId, Type type) {
+            Map<Type, Long> score = result.computeIfAbsent(talkId, id -> new EnumMap<>(Type.class));
+            score.merge(type, 1L, Long::sum);
+        }
+
+        private void countDown(UUID talkId, Type type) {
+            Map<Type, Long> score = result.computeIfAbsent(talkId, id -> new EnumMap<>(Type.class));
+            score.merge(type, -1L, Long::sum);
+        }
     }
 }
