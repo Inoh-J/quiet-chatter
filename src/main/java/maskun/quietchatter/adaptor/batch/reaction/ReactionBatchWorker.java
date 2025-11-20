@@ -14,12 +14,14 @@ import maskun.quietchatter.hexagon.application.value.ReactionTarget;
 import maskun.quietchatter.hexagon.domain.reaction.Reaction.Type;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
 public class ReactionBatchWorker {
     private final JdbcTemplate jdbcTemplate;
 
+    @Transactional
     public void process(ReactionRequestAggregator aggregator) {
         AffectedCountMap map = new AffectedCountMap();
 

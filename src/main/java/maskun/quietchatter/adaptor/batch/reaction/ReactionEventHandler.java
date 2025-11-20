@@ -1,7 +1,6 @@
 package maskun.quietchatter.adaptor.batch.reaction;
 
 import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -10,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import maskun.quietchatter.hexagon.application.value.ReactionTarget;
 import maskun.quietchatter.hexagon.outbound.ReactionEventPublisher;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -64,10 +65,17 @@ public class ReactionEventHandler implements ReactionEventPublisher {
         eventConsumer.start();
     }
 
-    @PreDestroy
-    protected void endConsume() {
-        shuttingDown = true;
-        eventConsumer.interrupt();
+    @EventListener(ContextClosedEvent.class)
+    protected void onApplicationEvent(ContextClosedEvent event) {
+        this.shuttingDown = true;
+
+        this.eventConsumer.interrupt();
+
+        try {
+            this.eventConsumer.join(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void consume(int batchSize) {
