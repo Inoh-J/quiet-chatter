@@ -1,4 +1,4 @@
-package maskun.quietchatter.shared.web;
+package maskun.quietchatter.ui;
 
 import java.util.UUID;
 import org.springframework.stereotype.Controller;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-class Ui {
+class UserInterfaceController {
 
     @GetMapping("/")
     String redirectToHome() {
