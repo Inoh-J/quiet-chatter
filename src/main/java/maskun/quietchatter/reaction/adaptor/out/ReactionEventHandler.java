@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import lombok.extern.slf4j.Slf4j;
-import maskun.quietchatter.reaction.application.ReactionTarget;
+import maskun.quietchatter.reaction.application.in.ReactionTarget;
 import maskun.quietchatter.reaction.application.out.ReactionEventPublisher;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextClosedEvent;

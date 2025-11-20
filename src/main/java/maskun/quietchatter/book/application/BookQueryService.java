@@ -9,6 +9,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import maskun.quietchatter.book.application.in.BookQueryable;
+import maskun.quietchatter.book.application.in.Keyword;
 import maskun.quietchatter.book.application.out.BookRepository;
 import maskun.quietchatter.book.application.out.ExternalBookSearcher;
 import maskun.quietchatter.book.domain.Book;

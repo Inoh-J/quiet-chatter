@@ -4,7 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import maskun.quietchatter.reaction.application.ReactionTarget;
+import maskun.quietchatter.reaction.application.in.ReactionTarget;
 
 class ReactionRequestAggregator {
 

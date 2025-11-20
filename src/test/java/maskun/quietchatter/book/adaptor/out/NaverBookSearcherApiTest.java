@@ -2,7 +2,7 @@ package maskun.quietchatter.book.adaptor.out;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import maskun.quietchatter.book.application.Keyword;
+import maskun.quietchatter.book.application.in.Keyword;
 import maskun.quietchatter.book.domain.Book;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;

@@ -5,9 +5,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import maskun.quietchatter.adaptor.web.WebConfig;
 import maskun.quietchatter.book.application.in.BookQueryable;
 import maskun.quietchatter.book.domain.Book;
+import maskun.quietchatter.shared.web.WebConfig;
 import net.datafaker.Faker;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;

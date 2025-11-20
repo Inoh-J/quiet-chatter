@@ -10,7 +10,7 @@ import java.util.function.Function;
 import java.util.stream.IntStream;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import maskun.quietchatter.reaction.application.ReactionTarget;
+import maskun.quietchatter.reaction.application.in.ReactionTarget;
 import maskun.quietchatter.reaction.domain.Reaction.Type;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;

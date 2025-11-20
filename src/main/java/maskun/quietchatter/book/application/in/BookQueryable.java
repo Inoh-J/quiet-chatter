@@ -2,7 +2,6 @@ package maskun.quietchatter.book.application.in;
 
 import java.util.List;
 import java.util.UUID;
-import maskun.quietchatter.book.application.Keyword;
 import maskun.quietchatter.book.domain.Book;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

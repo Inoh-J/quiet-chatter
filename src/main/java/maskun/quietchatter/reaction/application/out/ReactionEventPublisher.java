@@ -1,6 +1,6 @@
 package maskun.quietchatter.reaction.application.out;
 
-import maskun.quietchatter.reaction.application.ReactionTarget;
+import maskun.quietchatter.reaction.application.in.ReactionTarget;
 
 public interface ReactionEventPublisher {
     void add(ReactionTarget target);

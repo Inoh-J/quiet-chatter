@@ -3,7 +3,7 @@ package maskun.quietchatter.book.adaptor.out;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-import maskun.quietchatter.book.application.Keyword;
+import maskun.quietchatter.book.application.in.Keyword;
 import maskun.quietchatter.book.domain.Book;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

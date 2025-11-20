@@ -10,7 +10,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.Getter;
-import maskun.quietchatter.hexagon.domain.BaseEntity;
+import maskun.quietchatter.shared.persistence.BaseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 
