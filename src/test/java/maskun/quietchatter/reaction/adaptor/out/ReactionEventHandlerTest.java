@@ -1,7 +1,7 @@
 package maskun.quietchatter.reaction.adaptor.out;
 
 import java.util.List;
-import maskun.quietchatter.hexagon.application.value.ReactionTarget;
+import maskun.quietchatter.reaction.application.ReactionTarget;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

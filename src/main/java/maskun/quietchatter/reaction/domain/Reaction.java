@@ -1,4 +1,4 @@
-package maskun.quietchatter.hexagon.domain.reaction;
+package maskun.quietchatter.reaction.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

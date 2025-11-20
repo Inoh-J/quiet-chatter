@@ -1,16 +1,15 @@
-package maskun.quietchatter.hexagon.application;
+package maskun.quietchatter.reaction.application;
 
 import lombok.RequiredArgsConstructor;
-import maskun.quietchatter.hexagon.application.value.ReactionTarget;
-import maskun.quietchatter.hexagon.inbound.ReactionModifiable;
 import maskun.quietchatter.hexagon.outbound.MemberRepository;
-import maskun.quietchatter.hexagon.outbound.ReactionEventPublisher;
 import maskun.quietchatter.hexagon.outbound.TalkRepository;
+import maskun.quietchatter.reaction.application.in.ReactionModifiable;
+import maskun.quietchatter.reaction.application.out.ReactionEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ReactionService implements ReactionModifiable {
+class ReactionService implements ReactionModifiable {
     private final ReactionEventPublisher reactionEventPublisher;
     private final MemberRepository memberRepository;
     private final TalkRepository talkRepository;

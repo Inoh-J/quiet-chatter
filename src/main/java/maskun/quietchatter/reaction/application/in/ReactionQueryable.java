@@ -1,9 +1,9 @@
-package maskun.quietchatter.hexagon.inbound;
+package maskun.quietchatter.reaction.application.in;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import maskun.quietchatter.hexagon.domain.reaction.Reaction;
+import maskun.quietchatter.reaction.domain.Reaction;
 
 public interface ReactionQueryable {
     List<Reaction> getAllBy(UUID memberId, Collection<UUID> talkIds);

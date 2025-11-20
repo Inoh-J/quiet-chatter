@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.web.reaction;
+package maskun.quietchatter.reaction.adaptor.in;
 
 import org.junit.jupiter.api.Test;
 

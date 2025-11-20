@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import maskun.quietchatter.adaptor.jpa.JpaConfig;
-import maskun.quietchatter.hexagon.domain.reaction.Reaction;
+import maskun.quietchatter.reaction.domain.Reaction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
