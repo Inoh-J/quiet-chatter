@@ -2,6 +2,7 @@ package maskun.quietchatter.talk.adaptor.in;
 
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import maskun.quietchatter.shared.security.MemberDetails;
 import maskun.quietchatter.shared.web.IdResponse;
 import maskun.quietchatter.talk.application.in.TalkCreatable;
 import maskun.quietchatter.talk.application.in.TalkCreateRequest;
@@ -22,9 +23,9 @@ class TalkCommandApi {
     private final TalkCreatable talkCreatable;
 
     @PostMapping
-    ResponseEntity<IdResponse> post(@RequestBody TalkCreateWebRequest webRequest,
-                                    @AuthenticationPrincipal UUID memberId) {
-        TalkCreateRequest createRequest = convert(webRequest, memberId);
+    ResponseEntity<IdResponse> post(@AuthenticationPrincipal MemberDetails memberDetails,
+                                    @RequestBody TalkCreateWebRequest webRequest) {
+        TalkCreateRequest createRequest = convert(webRequest, memberDetails.getId());
         Talk posted = talkCreatable.create(createRequest);
         IdResponse idResponse = new IdResponse(posted.getId());
         return ResponseEntity.ok(idResponse);

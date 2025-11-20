@@ -16,23 +16,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.Authentication;
 
 @ExtendWith(MockitoExtension.class)
-class AuthTokenProviderTest {
+class GuestAuthenticationTokenProviderTest {
 
-    private AuthTokenProvider authTokenProvider;
+    private GuestAuthenticationTokenProvider guestAuthenticationTokenProvider;
 
     @Mock
     private GuestRegistrable guestRegistrable;
 
     @BeforeEach
     void setUp() {
-        when(guestRegistrable.createNewGuest()).thenReturn(getGuestFixture());
+        when(guestRegistrable.createNewGuest()).thenReturn(createFixture());
 
-        authTokenProvider = new AuthTokenProvider(guestRegistrable);
+        guestAuthenticationTokenProvider = new GuestAuthenticationTokenProvider(guestRegistrable);
     }
 
     @Test
-    void getGuest() {
-        Authentication auth = authTokenProvider.getGuest();
+    void create() {
+        Authentication auth = guestAuthenticationTokenProvider.create();
 
         assertThat(auth).isNotNull();
         assertThat(auth.getPrincipal()).isNotNull();
@@ -43,7 +43,7 @@ class AuthTokenProviderTest {
 
     }
 
-    private static Member getGuestFixture() {
+    private static Member createFixture() {
         return Instancio.of(Member.class)
                 .set(field(Member::getRole), Role.GUEST)
                 .create();

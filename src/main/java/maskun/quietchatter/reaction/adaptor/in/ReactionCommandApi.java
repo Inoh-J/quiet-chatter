@@ -1,9 +1,9 @@
 package maskun.quietchatter.reaction.adaptor.in;
 
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import maskun.quietchatter.reaction.application.in.ReactionModifiable;
 import maskun.quietchatter.reaction.application.in.ReactionTarget;
+import maskun.quietchatter.shared.security.MemberDetails;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -19,18 +19,18 @@ class ReactionCommandApi {
     private final ReactionModifiable reactionModifiable;
 
     @PostMapping
-    ResponseEntity<String> add(@AuthenticationPrincipal UUID memberId,
+    ResponseEntity<String> add(@AuthenticationPrincipal MemberDetails memberDetails,
                                @RequestBody ReactionWebRequest webRequest) {
 
-        ReactionTarget target = new ReactionTarget(webRequest.talkId(), memberId, webRequest.type());
+        ReactionTarget target = new ReactionTarget(webRequest.talkId(), memberDetails.getId(), webRequest.type());
         reactionModifiable.add(target);
         return ResponseEntity.accepted().build();
     }
 
     @DeleteMapping
-    ResponseEntity<String> remove(@AuthenticationPrincipal UUID memberId,
+    ResponseEntity<String> remove(@AuthenticationPrincipal MemberDetails memberDetails,
                                   @RequestBody ReactionWebRequest webRequest) {
-        ReactionTarget target = new ReactionTarget(webRequest.talkId(), memberId, webRequest.type());
+        ReactionTarget target = new ReactionTarget(webRequest.talkId(), memberDetails.getId(), webRequest.type());
         reactionModifiable.remove(target);
         return ResponseEntity.accepted().build();
     }

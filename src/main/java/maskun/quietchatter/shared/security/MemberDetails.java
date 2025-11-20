@@ -15,7 +15,7 @@ public record MemberDetails(
 ) implements UserDetails {
 
     public MemberDetails {
-        Assert.notNull(member, () -> "구성원은 null이 되어서는 안 됩니다");
+        Assert.notNull(member, () -> "멤버는 null이 되어서는 안 됩니다");
         Assert.notNull(member.getId(), () -> "멤버 ID는 null이 되어서는 안 됩니다");
         Assert.notNull(authorities, () -> "Authorities null 이어선 안됩니다");
     }

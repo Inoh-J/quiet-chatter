@@ -19,7 +19,7 @@ class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   AuthenticationProvider authenticationProvider,
+                                            GuestAuthenticationProvider authenticationProvider,
                                                    GuestPromotion guestPromotion) throws Exception {
 
         return http

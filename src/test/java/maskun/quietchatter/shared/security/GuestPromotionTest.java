@@ -33,21 +33,21 @@ import org.springframework.web.bind.annotation.RestController;
 @WebMvcTest(GuestPromotionTest.FakeController.class)
 @Import({SecurityConfig.class,
         WebConfig.class,
-        AuthTokenProvider.class,
+        GuestAuthenticationTokenProvider.class,
         GuestPromotionTest.FakeController.class})
 class GuestPromotionTest {
     static final String PROMOTION_PATH = "/api/promotion";
     static final String ANONYMOUS_PATH = "/api/anonymous";
 
     @MockitoBean
-    private AuthTokenProvider authTokenProvider;
+    private GuestAuthenticationTokenProvider guestAuthenticationTokenProvider;
 
     @Autowired
     private MockMvc mockMvc;
 
     @BeforeEach
     void setUp() {
-        when(authTokenProvider.getGuest()).thenReturn(getGuestAuthToken());
+        when(guestAuthenticationTokenProvider.create()).thenReturn(getGuestAuthToken());
     }
 
     private static @NotNull UsernamePasswordAuthenticationToken getGuestAuthToken() {

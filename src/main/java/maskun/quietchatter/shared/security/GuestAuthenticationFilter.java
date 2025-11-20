@@ -18,7 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Slf4j
 @RequiredArgsConstructor
 class GuestAuthenticationFilter extends OncePerRequestFilter {
-    private final AuthenticationProvider authenticationProvider;
+    private final GuestAuthenticationProvider guestAuthenticationProvider;
     private final List<RequestMatcher> requestMatchers;
 
     @Override
@@ -31,7 +31,7 @@ class GuestAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        Authentication auth = authenticationProvider.getGuest();
+        Authentication auth = guestAuthenticationProvider.create();
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
