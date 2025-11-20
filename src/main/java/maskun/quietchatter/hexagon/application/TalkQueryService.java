@@ -2,10 +2,10 @@ package maskun.quietchatter.hexagon.application;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import maskun.quietchatter.book.application.out.BookRepository;
 import maskun.quietchatter.hexagon.application.value.TalkQueryRequest;
 import maskun.quietchatter.hexagon.domain.talk.Talk;
 import maskun.quietchatter.hexagon.inbound.TalkQueryable;
-import maskun.quietchatter.hexagon.outbound.BookRepository;
 import maskun.quietchatter.hexagon.outbound.TalkRepository;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;

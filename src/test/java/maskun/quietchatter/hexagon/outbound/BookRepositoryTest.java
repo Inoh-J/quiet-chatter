@@ -7,8 +7,9 @@ import static org.instancio.Select.fields;
 
 import java.util.NoSuchElementException;
 import maskun.quietchatter.adaptor.jpa.JpaConfig;
+import maskun.quietchatter.book.application.out.BookRepository;
+import maskun.quietchatter.book.domain.Book;
 import maskun.quietchatter.hexagon.domain.BaseEntity;
-import maskun.quietchatter.hexagon.domain.book.Book;
 import org.instancio.Instancio;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

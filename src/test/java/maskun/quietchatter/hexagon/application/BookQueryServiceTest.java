@@ -13,11 +13,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
-import maskun.quietchatter.hexagon.application.value.Keyword;
+import maskun.quietchatter.book.application.Keyword;
+import maskun.quietchatter.book.application.in.BookQueryable;
+import maskun.quietchatter.book.application.out.BookRepository;
+import maskun.quietchatter.book.application.out.ExternalBookSearcher;
+import maskun.quietchatter.book.domain.Book;
 import maskun.quietchatter.hexagon.domain.BaseEntity;
-import maskun.quietchatter.hexagon.domain.book.Book;
-import maskun.quietchatter.hexagon.outbound.BookRepository;
-import maskun.quietchatter.hexagon.outbound.ExternalBookSearcher;
 import org.instancio.Instancio;
 import org.instancio.Model;
 import org.junit.jupiter.api.AfterEach;
@@ -43,7 +44,7 @@ class BookQueryServiceTest {
     private BookRepository bookRepository;
 
     @Autowired
-    private BookQueryService bookQueryService;
+    private BookQueryable bookQueryable;
 
     @BeforeEach
     void setUp() {
@@ -85,7 +86,7 @@ class BookQueryServiceTest {
                 });
 
         //when
-        Page<Book> result = bookQueryService.findBy(new Keyword("test"), pageRequest);
+        Page<Book> result = bookQueryable.findBy(new Keyword("test"), pageRequest);
 
         //then
         assertEquals(3, result.getTotalElements());

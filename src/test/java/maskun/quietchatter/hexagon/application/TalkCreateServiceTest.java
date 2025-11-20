@@ -6,12 +6,12 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.UUID;
+import maskun.quietchatter.book.application.out.BookRepository;
+import maskun.quietchatter.book.domain.Book;
 import maskun.quietchatter.hexagon.application.value.TalkCreateRequest;
-import maskun.quietchatter.hexagon.domain.book.Book;
 import maskun.quietchatter.hexagon.domain.talk.Content;
 import maskun.quietchatter.hexagon.domain.talk.Talk;
 import maskun.quietchatter.hexagon.domain.talk.Time;
-import maskun.quietchatter.hexagon.outbound.BookRepository;
 import maskun.quietchatter.hexagon.outbound.TalkRepository;
 import maskun.quietchatter.member.application.out.MemberRepository;
 import maskun.quietchatter.member.domain.Member;
