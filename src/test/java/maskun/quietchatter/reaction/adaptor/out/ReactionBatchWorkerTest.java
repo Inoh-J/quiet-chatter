@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.batch.reaction;
+package maskun.quietchatter.reaction.adaptor.out;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

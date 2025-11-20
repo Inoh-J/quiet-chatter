@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.batch.reaction;
+package maskun.quietchatter.reaction.adaptor.out;
 
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
-public class ReactionBatchWorker {
+class ReactionBatchWorker {
     private final JdbcTemplate jdbcTemplate;
 
     @Transactional
-    public void process(ReactionRequestAggregator aggregator) {
+    void process(ReactionRequestAggregator aggregator) {
         AffectedCountMap map = new AffectedCountMap();
 
         List<ReactionTarget> deleted = delete(aggregator.getDeletes());

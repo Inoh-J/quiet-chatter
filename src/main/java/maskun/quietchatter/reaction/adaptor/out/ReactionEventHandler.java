@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.batch.reaction;
+package maskun.quietchatter.reaction.adaptor.out;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -15,13 +15,13 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class ReactionEventHandler implements ReactionEventPublisher {
+class ReactionEventHandler implements ReactionEventPublisher {
     private final ReactionBatchWorker batchWorker;
     private final BlockingQueue<ReactionEvent> eventQueue;
     private volatile boolean shuttingDown;
     private final Thread eventConsumer;
 
-    public ReactionEventHandler(ReactionBatchWorker batchWorker,
+    ReactionEventHandler(ReactionBatchWorker batchWorker,
                                 @Value("${app.reaction.batch-size:100}") int batchSize) {
         if (batchSize < 1) {
             throw new IllegalStateException("배치사이즈는 1보다 작을 수 없습니다");

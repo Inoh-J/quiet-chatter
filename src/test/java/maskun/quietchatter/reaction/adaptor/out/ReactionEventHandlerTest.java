@@ -1,4 +1,4 @@
-package maskun.quietchatter.adaptor.batch.reaction;
+package maskun.quietchatter.reaction.adaptor.out;
 
 import java.util.List;
 import maskun.quietchatter.hexagon.application.value.ReactionTarget;
