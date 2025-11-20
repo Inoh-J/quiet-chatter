@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.Repository;
 
 public interface TalkRepository extends Repository<Talk, UUID> {
+    @SuppressWarnings("UnusedReturnValue")
     default Talk require(UUID id) {
         return findById(id).orElseThrow(() ->
                 new NoSuchElementException("찾을 수 없음 [%s] id=%s".formatted(Member.class.getSimpleName(), id)));

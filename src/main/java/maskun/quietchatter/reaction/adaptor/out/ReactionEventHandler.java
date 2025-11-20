@@ -65,6 +65,7 @@ class ReactionEventHandler implements ReactionEventPublisher {
         eventConsumer.start();
     }
 
+    @SuppressWarnings("unused")
     @EventListener(ContextClosedEvent.class)
     protected void onApplicationEvent(ContextClosedEvent event) {
         this.shuttingDown = true;

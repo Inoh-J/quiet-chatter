@@ -24,6 +24,7 @@ class UserInterfaceController {
         return "book-search-results";
     }
 
+    @SuppressWarnings("unused")
     @GetMapping("/books/{bookId}")
     String bookDetail(@PathVariable UUID bookId) {
         return "book-detail";

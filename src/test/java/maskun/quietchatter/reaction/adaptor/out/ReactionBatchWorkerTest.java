@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
+@SuppressWarnings("SqlWithoutWhere")
 @DataJpaTest(properties = "logging.level.org.springframework.jdbc=TRACE")
 @Import({JpaConfig.class, ReactionBatchWorker.class})
 @ActiveProfiles("test")
