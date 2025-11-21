@@ -8,7 +8,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-
+  threads:
+    virtual:
+      enabled: true
 naver:
   api:
     client-id: hidden
