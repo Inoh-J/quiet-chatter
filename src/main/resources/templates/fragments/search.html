@@ -1,6 +1,6 @@
 <div th:fragment="book-search">
-    <div class="search-container" style="position: relative;">
-        <!-- Voice of Customer Button -->
+    <div class="content-box search-container" style="position: relative;">
+        <!-- 고객의 소리 버튼 -->
         <div style="position: absolute; top: 10px; right: 10px;">
             <button class="btn btn-outline-secondary" data-bs-target="#vocModal" data-bs-toggle="modal" type="button">
                 <span class="d-none d-md-inline">무엇이든 말씀해주세요💬</span>
@@ -22,7 +22,7 @@
         </form>
     </div>
 
-    <!-- Voice of Customer Modal -->
+    <!-- 고객의 소리 모달 -->
     <div aria-hidden="true" aria-labelledby="vocModalLabel" class="modal fade" id="vocModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -49,7 +49,7 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        // Ensure the script runs only once, even if the fragment is included multiple times on a page.
+        // 프래그먼트가 페이지에 여러 번 포함되더라도 스크립트가 한 번만 실행되도록 보장합니다.
         if (!window.vocScriptLoaded) {
             const vocForm = document.getElementById('vocForm');
             if (vocForm) {
@@ -75,14 +75,14 @@
                             if (!response.ok) {
                                 throw new Error('메시지 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
                             }
-                            // Hide the modal using Bootstrap's static method
+                            // 부트스트랩의 정적 메소드를 사용하여 모달 숨기기
                             const vocModalElement = document.getElementById('vocModal');
                             const modal = bootstrap.Modal.getInstance(vocModalElement);
                             if (modal) {
                                 modal.hide();
                             }
 
-                            // Clear the textarea
+                            // 텍스트 영역 지우기
                             document.getElementById('vocMessage').value = '';
 
                             alert('소중한 의견 감사합니다!');

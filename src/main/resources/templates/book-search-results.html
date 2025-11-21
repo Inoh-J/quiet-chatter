@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Search Results - Quiet Chatter</title>
-    <link href="/images/quiet-chatter-icon.png" rel="icon" type="image/png">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="/css/style.css" rel="stylesheet">
+    <th:block th:replace="~{fragments/common-assets :: css}"></th:block>
     <style>
         h5.card-title a {
             color: inherit;
@@ -18,21 +15,7 @@
         }
 
         .results-container {
-            min-height: 500px; /* Prevent layout jump */
-        }
-
-        /* Skeleton UI Styles */
-        .skeleton {
-            animation: skeleton-loading 1s linear infinite alternate;
-        }
-
-        @keyframes skeleton-loading {
-            0% {
-                background-color: hsl(200, 20%, 80%);
-            }
-            100% {
-                background-color: hsl(200, 20%, 95%);
-            }
+            min-height: 500px; /* 레이아웃 깨짐 방지 */
         }
 
         .skeleton-avatar {
@@ -42,19 +25,8 @@
             border-radius: 0.25rem;
         }
 
-        .skeleton-text {
-            height: 0.8rem;
-            margin-bottom: 0.5rem;
-            border-radius: 0.25rem;
-        }
-
-        /* Media query for mobile responsiveness */
+        /* 모바일 반응형 미디어 쿼리 */
         @media (max-width: 576px) {
-            .container { /* Target the main container */
-                padding-left: 0 !important;
-                padding-right: 0 !important;
-            }
-
             .card.book-card {
                 border-radius: 0;
                 border-left: 0;
@@ -66,16 +38,18 @@
 <body>
 
 <div class="container">
-    <!-- The search form component -->
+    <!-- 검색 양식 컴포넌트 -->
     <div th:replace="~{fragments/search :: book-search}"></div>
 
-    <!-- Results and pagination placeholders -->
+    <!-- 결과 및 페이지네이션 플레이스홀더 -->
     <div class="mt-4 results-container" id="results"></div>
     <nav class="mt-4" id="pagination"></nav>
 </div>
 
-<!-- Script for fetching and rendering results -->
-<script>
+<!-- 결과 가져오기 및 렌더링을 위한 스크립트 -->
+<script type="module">
+    import * as api from '/js/api.js';
+
     const keywordInput = document.getElementById('keyword');
     const resultsContainer = document.getElementById('results');
     const paginationContainer = document.getElementById('pagination');
@@ -96,47 +70,36 @@
         resultsContainer.innerHTML = skeletonHTML;
     }
 
-    function searchBooks(keyword, page) {
+    async function searchBooks(keyword, page) {
         if (!keyword) {
             return;
         }
 
-        renderResultsSkeleton(); // Show skeleton UI first
+        renderResultsSkeleton(); // 먼저 스켈레톤 UI 표시
 
-        // Convert 1-based page from URL to 0-based for API
+        // URL의 1-기준 페이지를 API를 위한 0-기준으로 변환
         let apiPage = page - 1;
         if (apiPage < 0) apiPage = 0; // Ensure page doesn't go below 0
 
-        fetch(`/api/books?keyword=${keyword}&page=${apiPage}&sort=title,asc`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+        try {
+            const data = await api.searchBooks(keyword, apiPage);
+            // API 응답에는 'content' 배열과 'page' 객체가 있습니다.
+            if (data && data.content && data.content.length > 0) {
+                renderResults(data.content);
+                if (data.page) {
+                    renderPagination(data.page);
                 }
-                return response.json();
-            })
-            .then(data => {
-                // The API response has a 'content' array and a 'page' object.
-                if (data && data.content) {
-                    renderResults(data.content);
-                    if (data.page) {
-                        renderPagination(data.page);
-                    }
-                } else {
-                    resultsContainer.innerHTML = '<div class="alert alert-info">검색 결과가 없습니다.</div>';
-                    paginationContainer.innerHTML = '';
-                }
-            }).catch(error => {
+            } else {
+                resultsContainer.innerHTML = '<div class="alert alert-info">검색 결과가 없습니다.</div>';
+                paginationContainer.innerHTML = '';
+            }
+        } catch (error) {
             console.error('Error fetching search results:', error);
-            resultsContainer.innerHTML = '<div class="alert alert-danger">검색 중 오류가 발생했습니다.</div>';
-        });
+            resultsContainer.innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+        }
     }
 
     function renderResults(books) {
-        if (books.length === 0) {
-            resultsContainer.innerHTML = '<div class="alert alert-info">검색 결과가 없습니다.</div>';
-            return;
-        }
-
         resultsContainer.innerHTML = books.map(book => `
             <div class="card book-card">
                 <div class="card-body d-flex align-items-center" style="min-height: 122px;">
@@ -151,7 +114,7 @@
         `).join('');
     }
 
-    function renderPagination(page) { // 'page' here is the 0-based Spring Page object
+    function renderPagination(page) { // 여기서 'page'는 0-기준의 Spring Page 객체입니다
         paginationContainer.innerHTML = '';
         if (page.totalPages <= 1) {
             return;
@@ -161,16 +124,16 @@
         ul.className = 'pagination justify-content-center';
         const keyword = keywordInput.value;
 
-        // Previous button
+        // 이전 버튼
         if (!page.first) {
             const prevLi = document.createElement('li');
             prevLi.className = 'page-item';
-            // URL page parameter is 1-based (current 0-based page number)
+            // URL 페이지 매개변수는 1-기준입니다 (현재 0-기준 페이지 번호)
             prevLi.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${page.number}">이전</a>`;
             ul.appendChild(prevLi);
         }
 
-        // Page numbers
+        // 페이지 번호
         const maxPagesToShow = 6;
         let startPage = Math.max(0, page.number - Math.floor(maxPagesToShow / 2));
         let endPage = Math.min(page.totalPages - 1, startPage + maxPagesToShow - 1);
@@ -182,16 +145,16 @@
         for (let i = startPage; i <= endPage; i++) {
             const li = document.createElement('li');
             li.className = `page-item ${i === page.number ? 'active' : ''}`;
-            // URL page parameter is 1-based (i + 1)
+            // URL 페이지 매개변수는 1-기준입니다 (i + 1)
             li.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${i + 1}">${i + 1}</a>`;
             ul.appendChild(li);
         }
 
-        // Next button
+        // 다음 버튼
         if (!page.last) {
             const nextLi = document.createElement('li');
             nextLi.className = 'page-item';
-            // URL page parameter is 1-based (current 0-based page number + 2)
+            // URL 페이지 매개변수는 1-기준입니다 (현재 0-기준 페이지 번호 + 2)
             nextLi.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${page.number + 2}">다음</a>`;
             ul.appendChild(nextLi);
         }
@@ -200,10 +163,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        // This script now lives in and acts upon the search results page.
+        // 이 스크립트는 이제 검색 결과 페이지에 있으며 해당 페이지에 대해 작동합니다.
         const urlParams = new URLSearchParams(window.location.search);
         const keyword = urlParams.get('keyword');
-        // Default to 1 for the first page if 'page' parameter is missing or invalid
+        // 'page' 매개변수가 없거나 유효하지 않은 경우 첫 페이지는 1을 기본값으로 사용
         const page = parseInt(urlParams.get('page'), 10) || 1;
 
         if (keyword) {
@@ -212,6 +175,6 @@
         }
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<th:block th:replace="~{fragments/common-assets :: js}"></th:block>
 </body>
 </html>
