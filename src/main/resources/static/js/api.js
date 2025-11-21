@@ -1,3 +1,5 @@
+import {Book, Page, Talk} from './domain.js';
+
 // JSON 응답을 위한 간단한 에러 핸들러
 function handleJsonResponse(response) {
     if (!response.ok) {
@@ -16,61 +18,66 @@ function handleJsonResponse(response) {
  * 키워드로 책을 검색합니다.
  * @param {string} keyword - 검색 키워드.
  * @param {number} page - 가져올 페이지 번호 (0-기준).
- * @returns {Promise<object>} 검색 결과 페이지 객체로 귀결되는 프로미스.
+ * @returns {Promise<Page<Book>>} Book 인스턴스의 Page로 귀결되는 프로미스.
  */
 export function searchBooks(keyword, page = 0) {
-    return fetch(`/api/books?keyword=${keyword}&page=${page}`)
-        .then(handleJsonResponse);
+    return fetch(`/api/books?keyword=${keyword}&page=${page}&sort=title,asc`)
+        .then(handleJsonResponse)
+        .then(data => new Page(data, item => new Book(item)));
 }
 
 /**
  * 단일 도서의 상세 정보를 가져옵니다.
  * @param {string|number} bookId - 책의 ID.
- * @returns {Promise<object>} 도서 상세 객체로 귀결되는 프로미스.
+ * @returns {Promise<Book>} Book 인스턴스로 귀결되는 프로미스.
  */
 export function getBookDetails(bookId) {
     return fetch(`/api/books/${bookId}`)
-        .then(handleJsonResponse);
+        .then(handleJsonResponse)
+        .then(data => new Book(data));
 }
 
 /**
  * ID로 여러 권의 책을 가져옵니다.
  * @param {Array<string|number>} bookIds - 책 ID의 배열.
- * @returns {Promise<Array<object>>} 도서 객체의 배열로 귀결되는 프로미스.
+ * @returns {Promise<Book[]>} Book 인스턴스의 배열로 귀결되는 프로미스.
  */
 export function getBooksByIds(bookIds) {
     if (!bookIds || bookIds.length === 0) {
         return Promise.resolve([]);
     }
     return fetch(`/api/books?id=${bookIds.join(',')}`)
-        .then(handleJsonResponse);
+        .then(handleJsonResponse)
+        .then(data => data.map(item => new Book(item)));
 }
 
 /**
  * 특정 도서에 대한 북톡을 가져옵니다.
  * @param {string|number} bookId - 책의 ID.
  * @param {number} page - 가져올 페이지 번호 (0-기준).
- * @returns {Promise<object>} 북톡 페이지 객체로 귀결되는 프로미스.
+ * @returns {Promise<Page<Talk>>} Talk 인스턴스의 Page로 귀결되는 프로미스.
  */
 export function getTalks(bookId, page = 0) {
     return fetch(`/api/talks?bookId=${bookId}&page=${page}&size=6&sort=createdAt,desc`)
-        .then(handleJsonResponse);
+        .then(handleJsonResponse)
+        .then(data => new Page(data, item => new Talk(item)));
 }
 
 /**
  * 추천 북톡을 가져옵니다.
- * @returns {Promise<Array<object>>} 추천 북톡 배열로 귀결되는 프로미스.
+ * @returns {Promise<Talk[]>} Talk 인스턴스의 배열로 귀결되는 프로미스.
  */
 export function getRecommendedTalks() {
     return fetch('/api/talks/recommend')
-        .then(handleJsonResponse);
+        .then(handleJsonResponse)
+        .then(data => data.map(item => new Talk(item)));
 }
 
 /**
  * 책에 대한 새로운 북톡을 게시합니다.
  * @param {string|number} bookId - 책의 ID.
  * @param {string} content - 북톡의 내용.
- * @returns {Promise<object>} 새로 생성된 북톡 객체로 귀결되는 프로미스.
+ * @returns {Promise<Talk>} 새로 생성된 Talk 인스턴스로 귀결되는 프로미스.
  */
 export function postTalk(bookId, content) {
     const now = new Date();
@@ -81,7 +88,9 @@ export function postTalk(bookId, content) {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({bookId, content, hidden: hiddenTimestamp})
-    }).then(handleJsonResponse);
+    })
+        .then(handleJsonResponse)
+        .then(data => new Talk(data));
 }
 
 /**

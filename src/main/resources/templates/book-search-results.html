@@ -82,13 +82,11 @@
         if (apiPage < 0) apiPage = 0; // Ensure page doesn't go below 0
 
         try {
-            const data = await api.searchBooks(keyword, apiPage);
-            // API 응답에는 'content' 배열과 'page' 객체가 있습니다.
-            if (data && data.content && data.content.length > 0) {
-                renderResults(data.content);
-                if (data.page) {
-                    renderPagination(data.page);
-                }
+            const pageData = await api.searchBooks(keyword, apiPage);
+
+            if (pageData && pageData.content && pageData.content.length > 0) {
+                renderResults(pageData.content);
+                renderPagination(pageData.pageInfo);
             } else {
                 resultsContainer.innerHTML = '<div class="alert alert-info">검색 결과가 없습니다.</div>';
                 paginationContainer.innerHTML = '';
@@ -114,9 +112,9 @@
         `).join('');
     }
 
-    function renderPagination(page) { // 여기서 'page'는 0-기준의 Spring Page 객체입니다
+    function renderPagination(pageInfo) {
         paginationContainer.innerHTML = '';
-        if (page.totalPages <= 1) {
+        if (pageInfo.totalPages <= 1) {
             return;
         }
 
@@ -125,18 +123,17 @@
         const keyword = keywordInput.value;
 
         // 이전 버튼
-        if (!page.first) {
+        if (!pageInfo.first) {
             const prevLi = document.createElement('li');
             prevLi.className = 'page-item';
-            // URL 페이지 매개변수는 1-기준입니다 (현재 0-기준 페이지 번호)
-            prevLi.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${page.number}">이전</a>`;
+            prevLi.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${pageInfo.number}">이전</a>`;
             ul.appendChild(prevLi);
         }
 
         // 페이지 번호
         const maxPagesToShow = 6;
-        let startPage = Math.max(0, page.number - Math.floor(maxPagesToShow / 2));
-        let endPage = Math.min(page.totalPages - 1, startPage + maxPagesToShow - 1);
+        let startPage = Math.max(0, pageInfo.number - Math.floor(maxPagesToShow / 2));
+        let endPage = Math.min(pageInfo.totalPages - 1, startPage + maxPagesToShow - 1);
 
         if (endPage - startPage + 1 < maxPagesToShow) {
             startPage = Math.max(0, endPage - maxPagesToShow + 1);
@@ -144,18 +141,16 @@
 
         for (let i = startPage; i <= endPage; i++) {
             const li = document.createElement('li');
-            li.className = `page-item ${i === page.number ? 'active' : ''}`;
-            // URL 페이지 매개변수는 1-기준입니다 (i + 1)
+            li.className = `page-item ${i === pageInfo.number ? 'active' : ''}`;
             li.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${i + 1}">${i + 1}</a>`;
             ul.appendChild(li);
         }
 
         // 다음 버튼
-        if (!page.last) {
+        if (!pageInfo.last) {
             const nextLi = document.createElement('li');
             nextLi.className = 'page-item';
-            // URL 페이지 매개변수는 1-기준입니다 (현재 0-기준 페이지 번호 + 2)
-            nextLi.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${page.number + 2}">다음</a>`;
+            nextLi.innerHTML = `<a class="page-link" href="/books/search?keyword=${keyword}&page=${pageInfo.number + 2}">다음</a>`;
             ul.appendChild(nextLi);
         }
 

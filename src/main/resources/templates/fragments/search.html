@@ -51,48 +51,69 @@
         /*<![CDATA[*/
         // 프래그먼트가 페이지에 여러 번 포함되더라도 스크립트가 한 번만 실행되도록 보장합니다.
         if (!window.vocScriptLoaded) {
-            const vocForm = document.getElementById('vocForm');
-            if (vocForm) {
-                vocForm.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const messageContent = document.getElementById('vocMessage').value;
 
-                    if (!messageContent.trim()) {
-                        alert('메시지를 입력해주세요.');
-                        return;
-                    }
-
-                    const body = JSON.stringify({content: messageContent});
-
-                    fetch('/api/customer/messages', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: body
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('메시지 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
-                            }
-                            // 부트스트랩의 정적 메소드를 사용하여 모달 숨기기
-                            const vocModalElement = document.getElementById('vocModal');
-                            const modal = bootstrap.Modal.getInstance(vocModalElement);
-                            if (modal) {
-                                modal.hide();
-                            }
-
-                            // 텍스트 영역 지우기
-                            document.getElementById('vocMessage').value = '';
-
-                            alert('소중한 의견 감사합니다!');
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            alert(error.message);
-                        });
-                });
+            /**
+             * 고객의 소리(VOC) 폼의 이벤트 리스너를 초기화합니다.
+             */
+            function initializeVocForm() {
+                const vocForm = document.getElementById('vocForm');
+                if (vocForm) {
+                    vocForm.addEventListener('submit', handleVocSubmit);
+                }
             }
+
+            /**
+             * 폼 제출 이벤트를 비동기적으로 처리합니다.
+             * @param {Event} event - 제출 이벤트 객체.
+             */
+            async function handleVocSubmit(event) {
+                event.preventDefault();
+                const messageContent = document.getElementById('vocMessage').value;
+
+                if (!messageContent.trim()) {
+                    alert('메시지를 입력해주세요.');
+                    return;
+                }
+
+                try {
+                    await sendVocMessage(messageContent);
+                    handleVocSuccess();
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert(error.message);
+                }
+            }
+
+            /**
+             * 서버에 고객 메시지를 전송합니다.
+             * @param {string} content - 전송할 메시지 내용.
+             */
+            async function sendVocMessage(content) {
+                const response = await fetch('/api/customer/messages', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({content: content})
+                });
+
+                if (!response.ok) {
+                    throw new Error('메시지 전송에 실패했습니다. 잠시 후 다시 시도해주세요.');
+                }
+            }
+
+            /**
+             * 메시지 전송 성공 후 UI를 처리합니다.
+             */
+            function handleVocSuccess() {
+                const vocModalElement = document.getElementById('vocModal');
+                const modal = bootstrap.Modal.getInstance(vocModalElement);
+                if (modal) {
+                    modal.hide();
+                }
+                document.getElementById('vocMessage').value = '';
+                alert('소중한 의견 감사합니다!');
+            }
+
+            initializeVocForm();
             window.vocScriptLoaded = true;
         }
         /*]]>*/
