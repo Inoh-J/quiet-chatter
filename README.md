@@ -106,6 +106,7 @@
 - 자동 숨김 Self Hidden : 기본적으로 1년이 지나면 글은 자동으로 숨김된다.
 
 ---
+<br><br>
 
 ### 인프라스트럭처 아키텍쳐
 
@@ -138,7 +139,9 @@
 
 ```
 
-## 애플리케이션 아키텍쳐 (Hexagonal Architecture)
+<br><br>
+
+### 애플리케이션 아키텍쳐 (Hexagonal Architecture)
 
 ```mermaid
 ---
@@ -173,3 +176,165 @@ classDiagram
 
 ```
 
+<br><br>
+
+### 패키지 구조
+
+```text
+├── java
+│   └── maskun
+│       └── quietchatter
+│           ├── QuietChatterApplication.java
+│           ├── book
+│           │   ├── adaptor
+│           │   │   ├── in
+│           │   │   │   ├── BookApi.java
+│           │   │   │   └── BookResponse.java
+│           │   │   └── out
+│           │   │       ├── NaverApiEnvironment.java
+│           │   │       ├── NaverBookItem.java
+│           │   │       ├── NaverBookSearchResponse.java
+│           │   │       ├── NaverBookSearcher.java
+│           │   │       ├── NaverConfig.java
+│           │   ├── application
+│           │   │   ├── BookQueryService.java
+│           │   │   ├── in
+│           │   │   │   ├── BookQueryable.java
+│           │   │   │   └── Keyword.java
+│           │   │   └── out
+│           │   │       ├── BookRepository.java
+│           │   │       └── ExternalBookSearcher.java
+│           │   └── domain
+│           │       ├── Author.java
+│           │       ├── Book.java
+│           │       ├── Description.java
+│           │       ├── ExternalLink.java
+│           │       ├── Isbn.java
+│           │       ├── ThumbnailImage.java
+│           │       └── Title.java
+│           ├── customer
+│           │   ├── adaptor
+│           │   │   ├── in
+│           │   │   │   └── CustomerMessageApi.java
+│           │   │   └── out
+│           │   ├── application
+│           │   │   ├── CustomerMessageService.java
+│           │   │   ├── in
+│           │   │   │   └── CustomerMessageCreatable.java
+│           │   │   └── out
+│           │   │       └── CustomerMessageRepository.java
+│           │   └── domain
+│           │       ├── CustomerMessage.java
+│           │       └── Message.java
+│           ├── member
+│           │   ├── adaptor
+│           │   │   ├── in
+│           │   │   └── out
+│           │   ├── application
+│           │   │   ├── MemberRegistrator.java
+│           │   │   ├── in
+│           │   │   │   └── GuestRegistrable.java
+│           │   │   └── out
+│           │   │       └── MemberRepository.java
+│           │   └── domain
+│           │       ├── Id.java
+│           │       ├── Login.java
+│           │       ├── Member.java
+│           │       ├── Password.java
+│           │       ├── Role.java
+│           │       └── Status.java
+│           ├── reaction
+│           │   ├── adaptor
+│           │   │   ├── in
+│           │   │   │   ├── ReactionCommandApi.java
+│           │   │   │   └── ReactionWebRequest.java
+│           │   │   └── out
+│           │   │       ├── Action.java
+│           │   │       ├── ReactionBatchWorker.java
+│           │   │       ├── ReactionEvent.java
+│           │   │       ├── ReactionEventHandler.java
+│           │   │       └── ReactionRequestAggregator.java
+│           │   ├── application
+│           │   │   ├── ReactionQueryService.java
+│           │   │   ├── ReactionService.java
+│           │   │   ├── in
+│           │   │   │   ├── ReactionModifiable.java
+│           │   │   │   ├── ReactionQueryable.java
+│           │   │   │   └── ReactionTarget.java
+│           │   │   └── out
+│           │   │       ├── ReactionEventPublisher.java
+│           │   │       └── ReactionRepository.java
+│           │   └── domain
+│           │       └── Reaction.java
+│           ├── shared
+│           │   ├── persistence
+│           │   │   ├── BaseEntity.java
+│           │   │   └── JpaConfig.java
+│           │   ├── security
+│           │   │   ├── AuthenticatedMemberToken.java
+│           │   │   ├── GuestAuthenticationFilter.java
+│           │   │   ├── GuestAuthenticationProvider.java
+│           │   │   ├── GuestAuthenticationTokenProvider.java
+│           │   │   ├── GuestPathMatcherProvider.java
+│           │   │   ├── GuestPromotion.java
+│           │   │   ├── MemberDetailService.java
+│           │   │   ├── MemberDetails.java
+│           │   │   └── SecurityConfig.java
+│           │   └── web
+│           │       ├── ErrorResponse.java
+│           │       ├── IdResponse.java
+│           │       ├── RestClientConfig.java
+│           │       ├── WebConfig.java
+│           │       └── WebExceptionHandler.java
+│           ├── talk
+│           │   ├── adaptor
+│           │   │   ├── in
+│           │   │   │   ├── RecommendTalkQueryApi.java
+│           │   │   │   ├── TalkCommandApi.java
+│           │   │   │   ├── TalkCreateWebRequest.java
+│           │   │   │   ├── TalkQueryApi.java
+│           │   │   │   └── TalkResponse.java
+│           │   │   └── out
+│           │   │       ├── CacheUpdateExecutorConfig.java
+│           │   │       ├── RandomRecommendTalkMemory.java
+│           │   │       └── RandomTalkSampler.java
+│           │   ├── application
+│           │   │   ├── TalkCreateService.java
+│           │   │   ├── TalkQueryService.java
+│           │   │   ├── in
+│           │   │   │   ├── RecommendTalkQueryable.java
+│           │   │   │   ├── RecommendTalks.java
+│           │   │   │   ├── TalkCreatable.java
+│           │   │   │   ├── TalkCreateRequest.java
+│           │   │   │   ├── TalkQueryRequest.java
+│           │   │   │   └── TalkQueryable.java
+│           │   │   └── out
+│           │   │       ├── RecommendTalkRepository.java
+│           │   │       └── TalkRepository.java
+│           │   └── domain
+│           │       ├── Content.java
+│           │       ├── ReactionCount.java
+│           │       ├── Talk.java
+│           │       └── Time.java
+│           └── ui
+│               └── UserInterfaceController.java
+└── resources
+    ├── application.yml
+    ├── static
+    │   ├── css
+    │   │   └── style.css
+    │   ├── images
+    │   │   ├── quiet-chatter-icon.png
+    │   │   ├── quiet-chatter-icon2.png
+    │   │   └── 사용시연2.mp4
+    │   └── js
+    │       ├── api.js
+    │       └── domain.js
+    └── templates
+        ├── book-detail.html
+        ├── book-search-results.html
+        ├── fragments
+        │   ├── common-assets.html
+        │   └── search.html
+        └── home.html
+```
