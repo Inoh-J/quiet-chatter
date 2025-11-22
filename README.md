@@ -55,7 +55,7 @@
 
 접속경로 : https://quiet-chatter.com
 
-<img alt="quiet-chatter-icon2.png" height="600" src="src/main/resources/static/images/quiet-chatter-icon2.png" width="600"/>
+<img alt="quiet-chatter-icon2.png" height="400" src="src/main/resources/static/images/quiet-chatter-icon2.png" width="400"/>
 
 ### 서비스 설명
 
