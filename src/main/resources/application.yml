@@ -11,6 +11,14 @@ spring:
   threads:
     virtual:
       enabled: true
+  flyway:
+    enabled: true
+    # Flyway가 마이그레이션을 시작할 기본 버전 (보통 1)
+    # 이 설정을 사용하면, DB에 flyway_schema_history 테이블이 없을 때
+    # 현 DB 상태를 "baseline" 버전으로 기록하고 마이그레이션을 시작합니다.
+    baseline-on-migrate: true
+    baseline-version: 1 # 기존 스키마의 버전 번호를 1로 설정
+    locations: classpath:db/migration # 마이그레이션 파일 위치
 naver:
   api:
     client-id: hidden
