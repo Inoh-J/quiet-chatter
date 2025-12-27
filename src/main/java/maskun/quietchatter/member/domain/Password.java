@@ -1,7 +1,7 @@
 package maskun.quietchatter.member.domain;
 
 import jakarta.persistence.Embeddable;
-import org.springframework.lang.NonNull;
+import org.jspecify.annotations.NonNull;
 
 @Embeddable
 public record Password(String hash) {

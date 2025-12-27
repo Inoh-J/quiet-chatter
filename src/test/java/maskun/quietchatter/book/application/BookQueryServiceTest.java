@@ -20,8 +20,6 @@ import maskun.quietchatter.book.domain.Book;
 import maskun.quietchatter.shared.persistence.AuditableUuidEntity;
 import org.instancio.Instancio;
 import org.instancio.Model;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,15 +42,6 @@ class BookQueryServiceTest {
 
     @Autowired
     private BookQueryService bookQueryService;
-
-    @BeforeEach
-    void setUp() {
-
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
     @Test
     void findBy() {

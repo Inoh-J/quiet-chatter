@@ -20,7 +20,7 @@ class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
                                             GuestAuthenticationProvider authenticationProvider,
-                                                   GuestPromotion guestPromotion) throws Exception {
+                                            GuestPromotion guestPromotion) {
 
         return http
                 .anonymous(Customizer.withDefaults())

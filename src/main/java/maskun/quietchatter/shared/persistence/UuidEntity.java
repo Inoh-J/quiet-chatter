@@ -1,10 +1,8 @@
 package maskun.quietchatter.shared.persistence;
 
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.Id;
 import jakarta.persistence.MappedSuperclass;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -12,8 +10,6 @@ import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.annotations.UuidGenerator.Style;
 import org.hibernate.proxy.HibernateProxy;
 import org.jspecify.annotations.Nullable;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @MappedSuperclass
 public abstract class UuidEntity implements Serializable {
